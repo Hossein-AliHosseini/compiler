@@ -1,1 +1,1 @@
-# Compiler Allah Vakili
+# 40-414 – Compiler Design, fall 1401, Sharif University of Technology Project
