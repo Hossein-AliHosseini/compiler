@@ -107,4 +107,4 @@ class DFA:
         return self.current_state.is_end
 
     def is_error(self):
-        return True if self.current_state.id in self.error_states_id else False
+        return self.current_state.id in self.error_states_id
