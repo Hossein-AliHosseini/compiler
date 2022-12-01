@@ -1,5 +1,6 @@
 class Scanner:
-    def get_next_token():
+
+    def get_next_token(self):
         return
 
 
