@@ -69,6 +69,11 @@ class DFA:
             decoded_dfa.current_state = decoded_dfa.get_state_by_id(decoded_dfa.sign_map['starting_state_id'])
             return decoded_dfa
 
+    def get_next_state(self, symbol):
+        for transition in Transition.transitions:
+            if transition.src_state.id == self.current_state.id and symbol in transition.symbols:
+                return transition.dst_state
+
     def is_end_state(self):
         return self.current_state.is_end
 
