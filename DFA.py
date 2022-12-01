@@ -1,3 +1,6 @@
+import json
+
+
 class State:
     id_counter = 0
     states = []
@@ -9,16 +12,20 @@ class State:
         self.states.append(self)
         State.id_counter += 1
 
-    def get_state_by_id(id):
+    @classmethod
+    def get_state_by_id(cls, id):
         for state in State.states:
             if state.id == id:
                 return state
         return None
 
-    def serialize(self):
-        pass
+    def serialize(self, file_name):
+        with open(file_name, "w") as f:
+            json.dump(self, f)
+        f.close()
 
-    def deserialize(self):
+    @classmethod
+    def deserialize(cls, file_name):
         pass
 
 
