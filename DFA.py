@@ -27,11 +27,13 @@ class DFA:
                 'letter_sign': 'l',
                 'digit_sign': 'd',
                 'newline_sign': 'n',
+                'starting_state_id': 0,
             }
             self.states = {}
             self.transitions = {}
-            self.stating_state = None
+            self.starting_state = None
             self.current_state = None
+            self.error_states_id = []
             DFA.instance = self
 
     def add_state(self, s_id, is_start, is_end):
@@ -56,19 +58,19 @@ class DFA:
             data = json.loads(f.read())
             decoded_dfa = DFA()
             for state in data['states']:
-                decoded_dfa.add_state(state['id'], state['start'], state['end'])
+                state = decoded_dfa.add_state(state['id'], state['start'], state['end'])
+
             for transition in data['transitions']:
                 src_state = decoded_dfa.get_state_by_id(transition['state_src_id'])
                 dst_state = decoded_dfa.get_state_by_id(transition['state_dst_id'])
                 symbols = transition['symbols']
                 t_id = transition['id']
                 decoded_dfa.add_transition(t_id, src_state, dst_state, symbols)
+            decoded_dfa.current_state = decoded_dfa.get_state_by_id(decoded_dfa.sign_map['starting_state_id'])
             return decoded_dfa
-
-    def get_next_state(self, symbol):
-        for transition in Transition.transitions:
-            if transition.src_state.id == self.current_state.id and symbol in transition.symbols:
-                return transition.dst_state
 
     def is_end_state(self):
         return self.current_state.is_end
+
+    def is_error_state(self):
+        return True if self.current_state in self.error_states else False
