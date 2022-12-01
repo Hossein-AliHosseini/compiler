@@ -33,7 +33,7 @@ class DFA:
                 'eof_sign': 'e',
                 'symbol_sign': 's',
                 'mult_sign': '*',
-                'back_slash': '/',
+                'backslash_sign': '/',
                 'equal_sign': '=',
                 'other_sign': 'o',
             }
@@ -43,6 +43,7 @@ class DFA:
             self.starting_state = None
             self.current_state = None
             self.error_states_id = []
+            self.look_ahead_states_id = []
             DFA.instance = self
 
     def get_state_by_id(self, s_id):
@@ -51,7 +52,7 @@ class DFA:
     def get_transition_by_id(self, t_id):
         return self.transitions.get(t_id, default=None)
 
-    def get_symbol_of_char(self, char):
+    def get_type_of_char(self, char):
         if '0' <= char <= '9':
             return self.sign_map['digit_sign']
         if char.isalpha():
@@ -65,6 +66,24 @@ class DFA:
         if char in [' ', '\r', '\t', '\v', '\f']:
             return self.sign_map['whitespace_sign']
         return char
+
+    def can_move_current_state(self, last_char):
+        char = self.get_type_of_char(last_char)
+        if char not in self.sign_map.values():
+            return False
+        other_transition = None
+        for t_id in self.transitions:
+            transition = self.get_transition_by_id(t_id)
+            if transition.src_state == self.current_state and last_char in transition.symbols:
+                self.current_state = transition.dst_state
+                return True
+            if transition.src_state == self.current_state and self.sign_map['other_sign'] in transition.symbols:
+                other_transition = transition
+        if other_transition is None:
+            return False
+        else:
+            self.current_state = other_transition.dst_state
+            return True
 
     @classmethod
     def deserialize(cls, file_name):
@@ -89,6 +108,8 @@ class DFA:
             state_obj = self.add_state(state['id'], state['name'], state['start'], state['end'])
             if state['name'].startswith('Err'):
                 self.error_states_id.append(state_obj.id)
+            if state['name'].endswith('*'):
+                self.look_ahead_states_id.append(state_obj.id)
 
     def add_state(self, s_id, name, is_start, is_end):
         state = State(s_id, name, is_start, is_end)
@@ -108,3 +129,6 @@ class DFA:
 
     def is_error(self):
         return True if self.current_state.id in self.error_states_id else False
+
+    def is_look_ahead(self):
+        return self.current_state in self.look_ahead_states_id
