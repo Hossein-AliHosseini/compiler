@@ -23,7 +23,7 @@ class DFA:
     instance = None
 
     def __init__(self):
-        if DFA.instance is not None:
+        if DFA.instance is None:
             self.sign_map = {
                 'letter_sign': 'l',
                 'digit_sign': 'd',
@@ -46,11 +46,19 @@ class DFA:
             self.look_ahead_states_id = []
             DFA.instance = self
 
+    def get_error_type(self):
+        if self.current_state.id == 3:
+            return 'Invalid number'
+        if self.current_state.id == 18:
+            return "Unclosed comment"
+        if self.current_state.id == 20:
+            return 'Unmatched comment'
+
     def get_state_by_id(self, s_id):
-        return self.states.get(s_id, default=None)
+        return self.states.get(s_id)
 
     def get_transition_by_id(self, t_id):
-        return self.transitions.get(t_id, default=None)
+        return self.transitions.get(t_id)
 
     def get_type_of_char(self, char):
         if '0' <= char <= '9':
@@ -70,11 +78,14 @@ class DFA:
     def can_move_current_state(self, last_char):
         char = self.get_type_of_char(last_char)
         if char not in self.sign_map.values():
-            return False
+            if self.current_state.id in [12, 13, 15]:
+                char = 'o'
+            else:
+                return False
         other_transition = None
         for t_id in self.transitions:
             transition = self.get_transition_by_id(t_id)
-            if transition.src_state == self.current_state and last_char in transition.symbols:
+            if transition.src_state == self.current_state and char in transition.symbols:
                 self.current_state = transition.dst_state
                 return True
             if transition.src_state == self.current_state and self.sign_map['other_sign'] in transition.symbols:
@@ -89,7 +100,7 @@ class DFA:
     def deserialize(cls, file_name):
         with open(file_name, 'r') as f:
             data = json.loads(f.read())
-            decoded_dfa = DFA()
+            decoded_dfa = DFA.instance
             decoded_dfa.init_states(data)
             decoded_dfa.init_transactions(data)
             decoded_dfa.current_state = decoded_dfa.get_state_by_id(decoded_dfa.starting_state_id)
@@ -131,4 +142,24 @@ class DFA:
         return self.current_state.id in self.error_states_id
 
     def is_look_ahead(self):
-        return self.current_state in self.look_ahead_states_id
+        return self.current_state.id in self.look_ahead_states_id
+
+    def get_type(self):
+        if self.current_state.id in [12, 13]:
+            return "COMMENT"
+        if self.current_state.id == 5:
+            return 'ID'
+        if self.current_state.id == 2:
+            return 'NUM'
+        if self.current_state.id in [6, 7, 9]:
+            return 'SYMBOL'
+        if self.current_state.id == 10:
+            return 'WHITESPACE'
+        if self.current_state.id == 21:
+            return 'SYMBOL'
+        if self.current_state.id == 17:
+            return 'SYMBOL'
+        if self.current_state.id == 16:
+            return 'COMMENT'
+        if self.current_state.id == 14:
+            return 'COMMENT'
