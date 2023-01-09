@@ -36,6 +36,8 @@ class Scanner:
         return char == " " or char == "\t" or char == "\n" or char == "\r" or char == "\v" or char == "\f"
 
     def get_next_token(self):
+        if self.end_of_file:
+            return "EOF", '$', self.line_no
         buffer = ""
         last_char = None
         self.dfa.reset()
@@ -43,15 +45,15 @@ class Scanner:
             last_char = self.get_char()
             if last_char is None:
                 break
-            if last_char == '':
-                last_char = '\n'
+            # if last_char == '':
+            #     last_char = '\n'
             if last_char != "\n":
                 buffer += last_char
-            if not self.dfa.can_move_current_state(last_char):  # todo: debug this function (transitions)
+            if not self.dfa.can_move_current_state(last_char):
                 self.errors.add_error((buffer, "Invalid input"), self.line_no)
                 if last_char == "\n":
                     self.line_no += 1
-                return True
+                # return True
         if self.dfa.is_look_ahead():
             if last_char != '\n':
                 buffer = buffer[:-1]
@@ -61,22 +63,21 @@ class Scanner:
             self.line_no += 1
         if self.dfa.is_error():
             self.errors.add_error((buffer, self.dfa.get_error_type()), self.line_no)
-            return True
+            # return True
         if not self.dfa.is_final():
             if self.dfa.get_type() == "COMMENT":
                 message = buffer[:min(7, len(buffer))]
                 if len(buffer) > 7:
                     message += "..."
                 self.errors.add_error((message, "Unclosed comment"), self.line_no)
-            return False
+            # return False
         if buffer in self.symbol_table.keywords:
             token_type = "KEYWORD"
-            print('blp')
         else:
             token_type = self.dfa.get_type()
-        if token_type != 'WHITESPACE' and token_type != 'COMMENT':
-            print(buffer)
-            self.tokens.add_token((token_type, buffer), self.line_no)
-        if token_type == 'ID':
-            self.symbol_table.add_symbol(buffer)
-        return True
+        # if token_type != 'WHITESPACE' and token_type != 'COMMENT':
+        self.tokens.add_token((token_type, buffer), self.line_no)
+        return token_type, buffer, self.line_no
+        # if token_type == 'ID':
+        #     self.symbol_table.add_symbol(buffer)
+        # return True
