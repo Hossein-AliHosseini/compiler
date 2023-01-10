@@ -53,6 +53,7 @@ class Scanner:
                 self.errors.add_error((buffer, "Invalid input"), self.line_no)
                 if last_char == "\n":
                     self.line_no += 1
+                return self.get_next_token()
                 # return True
         if self.dfa.is_look_ahead():
             if last_char != '\n':
@@ -63,6 +64,7 @@ class Scanner:
             self.line_no += 1
         if self.dfa.is_error():
             self.errors.add_error((buffer, self.dfa.get_error_type()), self.line_no)
+            return self.get_next_token()
             # return True
         if not self.dfa.is_final():
             if self.dfa.get_type() == "COMMENT":
@@ -70,6 +72,7 @@ class Scanner:
                 if len(buffer) > 7:
                     message += "..."
                 self.errors.add_error((message, "Unclosed comment"), self.line_no)
+            return self.get_next_token()
             # return False
         if buffer in self.symbol_table.keywords:
             token_type = "KEYWORD"
