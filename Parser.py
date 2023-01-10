@@ -2180,6 +2180,7 @@ grammar = {
     }
 }
 
+
 class Parser:
 
     def __init__(self, scanner):
@@ -2237,6 +2238,7 @@ class Parser:
                     if Parser.get_token_value(current_token) == '$':
                         self.errors.append(f"#{current_token[2]} : syntax error , Unexpected EOF")
                         self.syntax_error_writer(self.errors) # todo: write new function
+                        self.parse_tree_writer('')
                         return
                     self.errors.append(f"#{current_token[2]} : syntax error , discarded {current_token[1]} from input")
                     current_token = self.get_next_token()
@@ -2275,6 +2277,7 @@ class Parser:
                 next_move = self.parse_table[self.stack[-1]][left_rule].split('_')
                 self.stack.append(left_rule_node)
                 if next_move[0] != 'goto':
+                    self.parse_tree_writer(Parser.format_tree(left_rule_node))
                     raise Exception("goto error")
                 self.stack.append(next_move[1])
 
