@@ -36,13 +36,13 @@ class Scanner:
         return char == " " or char == "\t" or char == "\n" or char == "\r" or char == "\v" or char == "\f"
 
     def get_next_token(self):
-        if self.end_of_file:
-            return "EOF", '$', self.line_no
         buffer = ""
         last_char = None
         self.dfa.reset()
         while not self.dfa.is_final():
             last_char = self.get_char()
+            if self.end_of_file:
+                return "EOF", '$', self.line_no
             if last_char is None:
                 break
             # if last_char == '':
