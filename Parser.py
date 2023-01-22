@@ -2184,34 +2184,27 @@ grammar = {
 class Parser:
 
     def __init__(self, scanner):
-        self.scanner = scanner  # Scanner("input.txt")
-        self.terminal = grammar['terminals']
-        self.non_terminal = grammar['non_terminals']
-        self.first = grammar['first']
-        self.follow = grammar['follow']
-        self.grammar = grammar['grammar']
-        self.parse_table = grammar['parse_table']
+        self.scanner = scanner
         self.stack = ['0']
         self.gotos = self.goto_states()
         self.errors = []
-        # self.syntax_error_writer = SyntaxErrorWriter('syntax_errors.txt')
-        # self.parse_tree_writer = ParseTreeWriter('parse_tree.txt')
 
     def get_next_token(self):
-        current_token = self.scanner.get_next_token()
-
-        while current_token and (current_token[0] == 'WHITESPACE' or current_token[0] == 'COMMENT'):
-            current_token = self.scanner.get_next_token()
-
-        return current_token
+        while True:
+            token = self.scanner.get_next_token()
+            if token[0] == 'COMMENT' or token[0] == 'WHITESPACE':
+                continue
+            else:
+                break
+        return token
 
     def syntax_error_writer(self, errors):
         if len(errors) == 0:
             result = 'There is no syntax error.'
         else:
-            result = '\n'.join(errors)
-        with open('syntax_errors.txt', 'w') as f:
-            f.write(result)
+            with open('syntax_errors.txt', 'w') as f:
+                for x in errors:
+                    f.write(str(x) + '\n')
 
     def parse_tree_writer(self, parse_tree):
         with open('parse_tree.txt', 'w') as f:
@@ -2219,112 +2212,109 @@ class Parser:
 
     def parse(self):
         current_token = self.get_next_token()
-        print(current_token)
         while True:
             last_index = self.stack[-1]
-            try:
-                next_move = self.parse_table[last_index][Parser.get_token_value(current_token)].split('_')
-            except Exception:
-                self.errors.append(f"#{current_token[2]} : syntax error , illegal {current_token[1]}")
+            key_value = self.calc_value(current_token)
+            if key_value in grammar['parse_table'][last_index]:
+                next_move = grammar['parse_table'][last_index][key_value].split('_')
+                if next_move[0] == 'reduce':
+                    lhs = grammar['grammar'][next_move[1]][0]
+                    rhs = grammar['grammar'][next_move[1]][2:]
+                    lrn = Node(lhs)
+                    if rhs != ['epsilon']:
+                        start_index = len(self.stack) - 2 * len(rhs)
+                        index = 0
+                        while index < 2 * len(rhs):
+                            poped = self.stack.pop(start_index)
+                            if index % 2 == 0:
+                                poped.parent = lrn
+                            index += 1
+                    else:
+                        Node('epsilon', lrn)
+                    new_move = grammar['parse_table'][self.stack[-1]][lhs].split('_')
+                    self.stack.append(lrn)
+                    if next_move[0] != 'goto':
+                        self.parse_tree_writer(self.format_tree(lrn))
+                    self.stack.append(new_move[1])
+                elif next_move[0] == "accept":
+                    Node('$', lrn)
+                    self.parse_tree_writer(self.format_tree(lrn))
+                    self.syntax_error_writer(self.errors)
+                    return
+                elif next_move[0] == 'shift':
+                    if current_token:
+                        node = Node((current_token[0], current_token[1]))
+                    else:
+                        node = Node(current_token)
+                    self.stack.append(node)
+                    self.stack.append(next_move[1])
+                    current_token = self.get_next_token()
+            else:
+                error_text = "#" + str(current_token[2]) + " : syntax error , illegal " + str(current_token[1])
+                self.errors.append(error_text)
                 current_token = self.get_next_token()
                 while self.stack[-1] not in self.gotos:
                     self.stack.pop()
-                    removed = self.stack.pop()
-                    if removed.name in self.non_terminal:
-                        self.errors.append(f"syntax error , discarded {removed.name} from stack")
+                    popped = self.stack.pop()
+                    if popped.name in grammar['non_terminals']:
+                        error_text = "syntax error , discarded " + str(popped.name) + " from stack"
                     else:
-                        self.errors.append(f"syntax error , discarded ({removed.name[0]}, {removed.name[1]}) from stack")
-                while not self.is_in_follows(self.stack[-1], Parser.get_token_value(current_token)):
-                    if Parser.get_token_value(current_token) == '$':
-                        self.errors.append(f"#{current_token[2]} : syntax error , Unexpected EOF")
-                        self.syntax_error_writer(self.errors) # todo: write new function
+                        error_text = "syntax error , discarded (" + str(popped.name[0]) + ", " + str(popped.name[1]) + ") from stack"
+                    self.errors.append(error_text)
+                while not self.follow_set(self.stack[-1], self.calc_value(current_token)):
+                    if self.calc_value(current_token) == '$':
+                        error_text = "#" + str(current_token[2]) + " : syntax error , Unexpected EOF"
+                        self.errors.append(error_text)
+                        self.syntax_error_writer(self.errors)
                         self.parse_tree_writer('')
                         return
-                    self.errors.append(f"#{current_token[2]} : syntax error , discarded {current_token[1]} from input")
-                    current_token = self.get_next_token()
-                next_non_terminal = self.is_in_follows(self.stack[-1], Parser.get_token_value(current_token))
-                next_state = self.parse_table[self.stack[-1]][next_non_terminal].split('_')[1]
-                self.errors.append(f"#{current_token[2]} : syntax error , missing {next_non_terminal}")
+                    else:
+                        error_text = "#" + str(current_token[2]) + " : syntax error , discarded " + str(current_token[1]) + " from input"
+                        self.errors.append(error_text)
+                        current_token = self.get_next_token()
+                next_non_terminal = self.follow_set(self.stack[-1], self.calc_value(current_token))
+                next_state = grammar['parse_table'][self.stack[-1]][next_non_terminal].split('_')[1]
+                error_text = "#" + str(current_token[2]) + " : syntax error , missing " + str(next_non_terminal)
+                self.errors.append(error_text)
                 self.stack.append(Node(next_non_terminal))
                 self.stack.append(next_state)
 
-                continue
-            if next_move[0] == "accept":
-                Node('$', left_rule_node)
-                self.parse_tree_writer(Parser.format_tree(left_rule_node)) # todo: write new function
-                self.syntax_error_writer(self.errors) # todo: write new function
-                return
-            elif next_move[0] == 'shift':
-                if current_token:
-                    node = Node((current_token[0], current_token[1]))
-                else:
-                    node = Node(current_token)
-                self.stack.append(node)
-                self.stack.append(next_move[1])
-                current_token = self.get_next_token()
-            elif next_move[0] == 'reduce':
-                rule = self.grammar[next_move[1]]
-                left_rule, right_rule = rule[0], rule[2:]
-                left_rule_node = Node(left_rule)
-                if right_rule != ['epsilon']:
-                    start_reduce_index = len(self.stack) - 2 * len(right_rule)
-                    for i in range(2 * len(right_rule)):
-                        item = self.stack.pop(start_reduce_index)
-                        if i % 2 == 0:
-                            item.parent = left_rule_node
-                else:
-                    Node('epsilon', left_rule_node)
-                next_move = self.parse_table[self.stack[-1]][left_rule].split('_')
-                self.stack.append(left_rule_node)
-                if next_move[0] != 'goto':
-                    self.parse_tree_writer(Parser.format_tree(left_rule_node))
-                    raise Exception("goto error")
-                self.stack.append(next_move[1])
+    def goto_states(self):
+        res = []
 
-    def goto_states(self) -> list:
-        result = []
-
-        for state in self.parse_table.keys():
-            row = self.parse_table[state]
-            for word in row.values():
-                if word.startswith('goto'):
-                    result.append(state)
+        for x in grammar['parse_table'].keys():
+            for v in grammar['parse_table'][x].values():
+                if v.startswith('goto'):
+                    res.append(x)
                     break
 
-        return result
+        return res
 
-    def get_gotos_alphabetically(self, state: str):
-        result = []
-        state_row = self.parse_table[state]
-        for word in state_row.keys():
-            if state_row[word].startswith('goto'):
-                result.append(word)
-        result.sort()
-        return result
-
-    def is_in_follows(self, state: str, token):
-        gotos = self.get_gotos_alphabetically(state)
-        for goto in gotos:
-            if token in self.follow[goto]:
+    def follow_set(self, state, token):
+        res = []
+        for x in grammar['parse_table'][state].keys():
+            if grammar['parse_table'][state][x].startswith('goto'):
+                res.append(x)
+        for goto in sorted(res):
+            if token in grammar['follow'][goto]:
                 return goto
 
         return None
 
-    @staticmethod
-    def format_tree(root: Node):
+
+    def format_tree(self, root):
         result = ''
         for pre, fill, node in RenderTree(root):
-            result += '%s%s' % (pre, Parser.format_node_name(node)) + '\n'
+            result += pre + self.format_node_name(node) + '\n'
         return result
 
-    @staticmethod
-    def format_node_name(node):
-        if type(node.name) == tuple:
-            return f'({node.name[0]}, {node.name[1]})'
-        return node.name
 
-    @staticmethod
-    def get_token_value(token):
+    def format_node_name(self, node):
+        return str(node.name[0] + ", " + node.name[1])\
+            if type(node.name) == tuple\
+                else node.name
+
+    def calc_value(self, token):
         if token[0] == 'EOF':
             return '$'
         if token[0] == 'KEYWORD' or token[0] == 'SYMBOL':
