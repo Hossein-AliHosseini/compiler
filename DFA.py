@@ -47,11 +47,11 @@ class DFA:
             DFA.instance = self
 
     def get_error_type(self):
-        if self.current_state.id == 3:
+        if self.current_state.name.startswith('ErrNum'):
             return 'Invalid number'
-        if self.current_state.id == 18:
-            return "Unclosed comment"
-        if self.current_state.id == 20:
+        if self.current_state.name.startswith('ErrUnclosed'):
+            return 'Unclosed comment'
+        if self.current_state.name.startswith('ErrUnmatched'):
             return 'Unmatched comment'
 
     def get_state_by_id(self, s_id):
@@ -69,7 +69,7 @@ class DFA:
             return self.sign_map['symbol_sign']
         if char in ['[', ']', '(', ')', '{', '}']:
             return self.sign_map['braces_sign']
-        if char == "\n":
+        if char == '\n':
             return self.sign_map['newline_sign']
         if char in [' ', '\r', '\t', '\v', '\f']:
             return self.sign_map['whitespace_sign']
@@ -78,7 +78,7 @@ class DFA:
     def can_move_current_state(self, last_char):
         char = self.get_type_of_char(last_char)
         if char not in self.sign_map.values():
-            if self.current_state.id in [12, 13, 15]:
+            if self.current_state.name.endswith('NFC'):
                 char = 'o'
             else:
                 return False
@@ -145,21 +145,13 @@ class DFA:
         return self.current_state.id in self.look_ahead_states_id
 
     def get_type(self):
-        if self.current_state.id in [12, 13]:
-            return "COMMENT"
-        if self.current_state.id == 5:
+        if self.current_state.name.startswith('COMMENT'):
+            return 'COMMENT'
+        if self.current_state.name.startswith('ID'):
             return 'ID'
-        if self.current_state.id == 2:
+        if self.current_state.name.startswith('NUM'):
             return 'NUM'
-        if self.current_state.id in [6, 7, 9]:
+        if self.current_state.name.startswith('SYMBOL'):
             return 'SYMBOL'
-        if self.current_state.id == 10:
+        if self.current_state.name.startswith('WHITESPACE'):
             return 'WHITESPACE'
-        if self.current_state.id == 21:
-            return 'SYMBOL'
-        if self.current_state.id == 17:
-            return 'SYMBOL'
-        if self.current_state.id == 16:
-            return 'COMMENT'
-        if self.current_state.id == 14:
-            return 'COMMENT'

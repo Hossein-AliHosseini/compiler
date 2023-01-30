@@ -22,6 +22,4 @@ class SymbolTable:
         for ident in self.symbol_table:
             f.write(str(counter) + '.\t' + ident + '\n')
             counter += 1
-        # for no in range(1, len(self.symbol_table)+1):
-        #     f.write(str(no) + '.\t' + self.symbol_table[no-1] + '\n')
         f.close()
