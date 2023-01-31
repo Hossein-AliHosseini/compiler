@@ -5,32 +5,21 @@ MohammadHossein AliHosseini - 99101921
 """
 
 from scanner import Scanner
-from parser import Parser
-from grammar import grammar
 
 
 class Compiler:
     def __init__(self):
         self.scanner = Scanner('input.txt')
-        self.parser = Parser(self.scanner, grammar)
 
-    # def scan(self):
-    #     while True:
-    #         if not self.scanner.get_next_token():
-    #             break
-    #     self.scanner.tokens.write_file()
-    #     self.scanner.errors.write_file()
-    #     self.scanner.symbol_table.write_file()
-
-    def parse(self):
-        self.parser.parse()
-        # self.parser.print_parse_tree()
-        # self.parser.write_errors_to_file()
-        # self.parser.code_generator.write_to_file()
-
-    def compile(self):
-        pass
+    def scan(self):
+        while True:
+            token = self.scanner.get_next_token()
+            if token[0] == 'EOF':
+                break
+        self.scanner.tokens.write_file()
+        self.scanner.errors.write_file()
+        self.scanner.symbol_table.write_file()
 
 
 compiler = Compiler()
-compiler.parse()
+compiler.scan()
