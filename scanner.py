@@ -11,7 +11,7 @@ class Scanner:
         self.symbol_table = SymbolTable()
         self.tokens = Tokens()
         self.dfa = DFA()
-        self.dfa.deserialize('DFA.json')
+        self.dfa.deserialize('dfa/DFA.json')
         self.errors = Errors()
         self.line_no = 1
         self.is_rewind = False
@@ -34,9 +34,10 @@ class Scanner:
         return char in [' ', '\t', '\n', '\r', '\v', '\f']
 
     def get_next_token(self):
+        last_char = None
         buffer = ''
         self.dfa.reset()
-        while True:
+        while not self.dfa.is_final():
             last_char = self.get_char()
             if self.end_of_file:
                 return 'EOF', '$', self.line_no
@@ -48,8 +49,6 @@ class Scanner:
                 self.errors.add_error((buffer, 'Invalid input'), self.line_no)
                 self.line_no += 1 if last_char == '\n' else 0
                 return self.get_next_token()
-            if self.dfa.is_final():
-                break
         if self.dfa.is_look_ahead():
             buffer = buffer[:-1] if last_char != '\n' else buffer
             self.is_rewind = True
@@ -65,5 +64,8 @@ class Scanner:
             self.errors.add_error((buffer, self.dfa.get_error_type()), self.line_no)
             return self.get_next_token()
         token_type = 'KEYWORD' if buffer in self.symbol_table.keywords else self.dfa.get_type()
-        self.tokens.add_token((token_type, buffer), self.line_no)
+        if token_type != 'WHITESPACE' and token_type != 'COMMENT':
+            self.tokens.add_token((token_type, buffer), self.line_no)
+        if token_type == 'ID':
+            self.symbol_table.add_symbol(buffer)
         return token_type, buffer, self.line_no
