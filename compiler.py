@@ -5,13 +5,14 @@ MohammadHossein AliHosseini - 99101921
 """
 
 from scanner import Scanner
-from Parser import Parser
+from parser import Parser
+from grammar import grammar
 
 
 class Compiler:
     def __init__(self):
         self.scanner = Scanner('input.txt')
-        self.parser = Parser(self.scanner)
+        self.parser = Parser(self.scanner, grammar)
 
     # def scan(self):
     #     while True:
