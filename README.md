@@ -1,1 +1,1 @@
-# 40-414 – Compiler Design, fall 1401, Sharif University of Technology Project
+# Compiler Design - Fall 1401 - Sharif University of Technology Project
