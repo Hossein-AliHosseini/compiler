@@ -1,0 +1,2266 @@
+Grammar
+
+    0 $accept: program $end
+
+    1 program: declaration_list
+
+    2 declaration_list: declaration_list declaration
+    3                 | declaration
+
+    4 declaration: var_declaration
+    5            | fun_declaration
+
+    6 var_declaration: type_specifier p_id_index ID ';'
+    7                | type_specifier p_id_index ID '[' p_num NUM ']' ';'
+
+    8 type_specifier: p_type "int"
+    9               | p_type "void"
+
+   10 fun_declaration: type_specifier p_id_index ID func_declare '(' params ')' compound_stmt
+
+   11 params: param_list
+   12       | p_type "void"
+
+   13 param_list: param_list ',' param
+   14           | param
+
+   15 param: type_specifier p_id_index ID
+   16      | type_specifier p_id_index ID '[' ']'
+
+   17 compound_stmt: '{' local_declarations statement_list '}'
+
+   18 local_declarations: local_declarations var_declaration
+   19                   | ε
+
+   20 statement_list: statement_list statement
+   21               | ε
+
+   22 statement: expression_stmt
+   23          | compound_stmt
+   24          | selection_stmt
+   25          | iteration_stmt
+   26          | return_stmt
+   27          | switch_stmt
+
+   28 expression_stmt: expression ';'
+   29                | "break" ';'
+   30                | ';'
+
+   31 selection_stmt: "if" '(' expression ')' save statement "endif"
+   32               | "if" '(' expression ')' save statement "else" jpf_save statement "endif"
+
+   33 iteration_stmt: "while" save save_break_temp '(' expression ')' while_condition statement
+
+   34 return_stmt: "return" ';'
+   35            | "return" expression ';'
+
+   36 switch_stmt: "switch" save save_break_temp '(' expression ')' dummy_save '{' case_stmts default_stmt '}'
+
+   37 case_stmts: case_stmts case_stmt
+   38           | ε
+
+   39 case_stmt: jpf "case" case_condition NUM ':' save statement_list
+
+   40 default_stmt: jpf "default" ':' statement_list
+   41             | jpf
+
+   42 expression: var '=' expression
+   43           | simple_expression
+
+   44 var: p_id ID
+   45    | p_id ID '[' expression ']'
+
+   46 simple_expression: additive_expression relop additive_expression
+   47                  | additive_expression
+
+   48 relop: p_op '<'
+   49      | p_op "=="
+
+   50 additive_expression: additive_expression addop term
+   51                    | term
+
+   52 addop: p_op '+'
+   53      | p_op '-'
+
+   54 term: term mulop factor
+   55     | factor
+
+   56 mulop: p_op '*'
+   57      | p_op '/'
+
+   58 factor: '(' expression ')'
+   59       | var
+   60       | call
+   61       | p_num_temp NUM
+
+   62 call: p_id ID '(' args ')'
+
+   63 args: arg_list
+   64     | ε
+
+   65 arg_list: arg_list ',' expression
+   66         | expression
+
+   67 p_id_index: ε
+
+   68 p_num: ε
+
+   69 p_type: ε
+
+   70 p_id: ε
+
+   71 p_op: ε
+
+   72 p_num_temp: ε
+
+   73 func_declare: ε
+
+   74 save: ε
+
+   75 jpf_save: ε
+
+   76 save_break_temp: ε
+
+   77 while_condition: ε
+
+   78 case_condition: ε
+
+   79 dummy_save: ε
+
+   80 jpf: ε
+
+
+Terminals, with rules where they appear
+
+    $end (0) 0
+    '(' (40) 10 31 32 33 36 58 62
+    ')' (41) 10 31 32 33 36 58 62
+    '*' (42) 56
+    '+' (43) 52
+    ',' (44) 13 65
+    '-' (45) 53
+    '/' (47) 57
+    ':' (58) 39 40
+    ';' (59) 6 7 28 29 30 34 35
+    '<' (60) 48
+    '=' (61) 42
+    '[' (91) 7 16 45
+    ']' (93) 7 16 45
+    '{' (123) 17 36
+    '}' (125) 17 36
+    error (256)
+    NUM (258) 7 39 61
+    ID (259) 6 7 10 15 16 44 45 62
+    "int" (260) 8
+    "void" (261) 9 12
+    "break" (262) 29
+    "if" (263) 31 32
+    "endif" (264) 31 32
+    "else" (265) 32
+    "while" (266) 33
+    "return" (267) 34 35
+    "switch" (268) 36
+    "case" (269) 39
+    "default" (270) 40
+    "==" (271) 49
+
+
+Nonterminals, with rules where they appear
+
+    $accept (32)
+        on left: 0
+    program (33)
+        on left: 1
+        on right: 0
+    declaration_list (34)
+        on left: 2 3
+        on right: 1 2
+    declaration (35)
+        on left: 4 5
+        on right: 2 3
+    var_declaration (36)
+        on left: 6 7
+        on right: 4 18
+    type_specifier (37)
+        on left: 8 9
+        on right: 6 7 10 15 16
+    fun_declaration (38)
+        on left: 10
+        on right: 5
+    params (39)
+        on left: 11 12
+        on right: 10
+    param_list (40)
+        on left: 13 14
+        on right: 11 13
+    param (41)
+        on left: 15 16
+        on right: 13 14
+    compound_stmt (42)
+        on left: 17
+        on right: 10 23
+    local_declarations (43)
+        on left: 18 19
+        on right: 17 18
+    statement_list (44)
+        on left: 20 21
+        on right: 17 20 39 40
+    statement (45)
+        on left: 22 23 24 25 26 27
+        on right: 20 31 32 33
+    expression_stmt (46)
+        on left: 28 29 30
+        on right: 22
+    selection_stmt (47)
+        on left: 31 32
+        on right: 24
+    iteration_stmt (48)
+        on left: 33
+        on right: 25
+    return_stmt (49)
+        on left: 34 35
+        on right: 26
+    switch_stmt (50)
+        on left: 36
+        on right: 27
+    case_stmts (51)
+        on left: 37 38
+        on right: 36 37
+    case_stmt (52)
+        on left: 39
+        on right: 37
+    default_stmt (53)
+        on left: 40 41
+        on right: 36
+    expression (54)
+        on left: 42 43
+        on right: 28 31 32 33 35 36 42 45 58 65 66
+    var (55)
+        on left: 44 45
+        on right: 42 59
+    simple_expression (56)
+        on left: 46 47
+        on right: 43
+    relop (57)
+        on left: 48 49
+        on right: 46
+    additive_expression (58)
+        on left: 50 51
+        on right: 46 47 50
+    addop (59)
+        on left: 52 53
+        on right: 50
+    term (60)
+        on left: 54 55
+        on right: 50 51 54
+    mulop (61)
+        on left: 56 57
+        on right: 54
+    factor (62)
+        on left: 58 59 60 61
+        on right: 54 55
+    call (63)
+        on left: 62
+        on right: 60
+    args (64)
+        on left: 63 64
+        on right: 62
+    arg_list (65)
+        on left: 65 66
+        on right: 63 65
+    p_id_index (66)
+        on left: 67
+        on right: 6 7 10 15 16
+    p_num (67)
+        on left: 68
+        on right: 7
+    p_type (68)
+        on left: 69
+        on right: 8 9 12
+    p_id (69)
+        on left: 70
+        on right: 44 45 62
+    p_op (70)
+        on left: 71
+        on right: 48 49 52 53 56 57
+    p_num_temp (71)
+        on left: 72
+        on right: 61
+    func_declare (72)
+        on left: 73
+        on right: 10
+    save (73)
+        on left: 74
+        on right: 31 32 33 36 39
+    jpf_save (74)
+        on left: 75
+        on right: 32
+    save_break_temp (75)
+        on left: 76
+        on right: 33 36
+    while_condition (76)
+        on left: 77
+        on right: 33
+    case_condition (77)
+        on left: 78
+        on right: 39
+    dummy_save (78)
+        on left: 79
+        on right: 36
+    jpf (79)
+        on left: 80
+        on right: 39 40 41
+
+
+State 0
+
+    0 $accept: • program $end
+    1 program: • declaration_list
+    2 declaration_list: • declaration_list declaration
+    3                 | • declaration
+    4 declaration: • var_declaration
+    5            | • fun_declaration
+    6 var_declaration: • type_specifier p_id_index ID ';'
+    7                | • type_specifier p_id_index ID '[' p_num NUM ']' ';'
+    8 type_specifier: • p_type "int"
+    9               | • p_type "void"
+   10 fun_declaration: • type_specifier p_id_index ID func_declare '(' params ')' compound_stmt
+   69 p_type: ε •
+
+    $default  reduce using rule 69 (p_type)
+
+    program           go to state 1
+    declaration_list  go to state 2
+    declaration       go to state 3
+    var_declaration   go to state 4
+    type_specifier    go to state 5
+    fun_declaration   go to state 6
+    p_type            go to state 7
+
+
+State 1
+
+    0 $accept: program • $end
+
+    $end  shift, and go to state 8
+
+
+State 2
+
+    1 program: declaration_list •  [$end]
+    2 declaration_list: declaration_list • declaration
+    4 declaration: • var_declaration
+    5            | • fun_declaration
+    6 var_declaration: • type_specifier p_id_index ID ';'
+    7                | • type_specifier p_id_index ID '[' p_num NUM ']' ';'
+    8 type_specifier: • p_type "int"
+    9               | • p_type "void"
+   10 fun_declaration: • type_specifier p_id_index ID func_declare '(' params ')' compound_stmt
+   69 p_type: ε •  ["int", "void"]
+
+    $end      reduce using rule 1 (program)
+    $default  reduce using rule 69 (p_type)
+
+    declaration      go to state 9
+    var_declaration  go to state 4
+    type_specifier   go to state 5
+    fun_declaration  go to state 6
+    p_type           go to state 7
+
+
+State 3
+
+    3 declaration_list: declaration •
+
+    $default  reduce using rule 3 (declaration_list)
+
+
+State 4
+
+    4 declaration: var_declaration •
+
+    $default  reduce using rule 4 (declaration)
+
+
+State 5
+
+    6 var_declaration: type_specifier • p_id_index ID ';'
+    7                | type_specifier • p_id_index ID '[' p_num NUM ']' ';'
+   10 fun_declaration: type_specifier • p_id_index ID func_declare '(' params ')' compound_stmt
+   67 p_id_index: ε •
+
+    $default  reduce using rule 67 (p_id_index)
+
+    p_id_index  go to state 10
+
+
+State 6
+
+    5 declaration: fun_declaration •
+
+    $default  reduce using rule 5 (declaration)
+
+
+State 7
+
+    8 type_specifier: p_type • "int"
+    9               | p_type • "void"
+
+    "int"   shift, and go to state 11
+    "void"  shift, and go to state 12
+
+
+State 8
+
+    0 $accept: program $end •
+
+    $default  accept
+
+
+State 9
+
+    2 declaration_list: declaration_list declaration •
+
+    $default  reduce using rule 2 (declaration_list)
+
+
+State 10
+
+    6 var_declaration: type_specifier p_id_index • ID ';'
+    7                | type_specifier p_id_index • ID '[' p_num NUM ']' ';'
+   10 fun_declaration: type_specifier p_id_index • ID func_declare '(' params ')' compound_stmt
+
+    ID  shift, and go to state 13
+
+
+State 11
+
+    8 type_specifier: p_type "int" •
+
+    $default  reduce using rule 8 (type_specifier)
+
+
+State 12
+
+    9 type_specifier: p_type "void" •
+
+    $default  reduce using rule 9 (type_specifier)
+
+
+State 13
+
+    6 var_declaration: type_specifier p_id_index ID • ';'
+    7                | type_specifier p_id_index ID • '[' p_num NUM ']' ';'
+   10 fun_declaration: type_specifier p_id_index ID • func_declare '(' params ')' compound_stmt
+   73 func_declare: ε •  ['(']
+
+    ';'  shift, and go to state 14
+    '['  shift, and go to state 15
+
+    $default  reduce using rule 73 (func_declare)
+
+    func_declare  go to state 16
+
+
+State 14
+
+    6 var_declaration: type_specifier p_id_index ID ';' •
+
+    $default  reduce using rule 6 (var_declaration)
+
+
+State 15
+
+    7 var_declaration: type_specifier p_id_index ID '[' • p_num NUM ']' ';'
+   68 p_num: ε •
+
+    $default  reduce using rule 68 (p_num)
+
+    p_num  go to state 17
+
+
+State 16
+
+   10 fun_declaration: type_specifier p_id_index ID func_declare • '(' params ')' compound_stmt
+
+    '('  shift, and go to state 18
+
+
+State 17
+
+    7 var_declaration: type_specifier p_id_index ID '[' p_num • NUM ']' ';'
+
+    NUM  shift, and go to state 19
+
+
+State 18
+
+    8 type_specifier: • p_type "int"
+    9               | • p_type "void"
+   10 fun_declaration: type_specifier p_id_index ID func_declare '(' • params ')' compound_stmt
+   11 params: • param_list
+   12       | • p_type "void"
+   13 param_list: • param_list ',' param
+   14           | • param
+   15 param: • type_specifier p_id_index ID
+   16      | • type_specifier p_id_index ID '[' ']'
+   69 p_type: ε •
+
+    $default  reduce using rule 69 (p_type)
+
+    type_specifier  go to state 20
+    params          go to state 21
+    param_list      go to state 22
+    param           go to state 23
+    p_type          go to state 24
+
+
+State 19
+
+    7 var_declaration: type_specifier p_id_index ID '[' p_num NUM • ']' ';'
+
+    ']'  shift, and go to state 25
+
+
+State 20
+
+   15 param: type_specifier • p_id_index ID
+   16      | type_specifier • p_id_index ID '[' ']'
+   67 p_id_index: ε •
+
+    $default  reduce using rule 67 (p_id_index)
+
+    p_id_index  go to state 26
+
+
+State 21
+
+   10 fun_declaration: type_specifier p_id_index ID func_declare '(' params • ')' compound_stmt
+
+    ')'  shift, and go to state 27
+
+
+State 22
+
+   11 params: param_list •  [')']
+   13 param_list: param_list • ',' param
+
+    ','  shift, and go to state 28
+
+    $default  reduce using rule 11 (params)
+
+
+State 23
+
+   14 param_list: param •
+
+    $default  reduce using rule 14 (param_list)
+
+
+State 24
+
+    8 type_specifier: p_type • "int"
+    9               | p_type • "void"
+   12 params: p_type • "void"
+
+    "int"   shift, and go to state 11
+    "void"  shift, and go to state 29
+
+
+State 25
+
+    7 var_declaration: type_specifier p_id_index ID '[' p_num NUM ']' • ';'
+
+    ';'  shift, and go to state 30
+
+
+State 26
+
+   15 param: type_specifier p_id_index • ID
+   16      | type_specifier p_id_index • ID '[' ']'
+
+    ID  shift, and go to state 31
+
+
+State 27
+
+   10 fun_declaration: type_specifier p_id_index ID func_declare '(' params ')' • compound_stmt
+   17 compound_stmt: • '{' local_declarations statement_list '}'
+
+    '{'  shift, and go to state 32
+
+    compound_stmt  go to state 33
+
+
+State 28
+
+    8 type_specifier: • p_type "int"
+    9               | • p_type "void"
+   13 param_list: param_list ',' • param
+   15 param: • type_specifier p_id_index ID
+   16      | • type_specifier p_id_index ID '[' ']'
+   69 p_type: ε •
+
+    $default  reduce using rule 69 (p_type)
+
+    type_specifier  go to state 20
+    param           go to state 34
+    p_type          go to state 7
+
+
+State 29
+
+    9 type_specifier: p_type "void" •  [ID]
+   12 params: p_type "void" •  [')']
+
+    ')'       reduce using rule 12 (params)
+    $default  reduce using rule 9 (type_specifier)
+
+
+State 30
+
+    7 var_declaration: type_specifier p_id_index ID '[' p_num NUM ']' ';' •
+
+    $default  reduce using rule 7 (var_declaration)
+
+
+State 31
+
+   15 param: type_specifier p_id_index ID •  [')', ',']
+   16      | type_specifier p_id_index ID • '[' ']'
+
+    '['  shift, and go to state 35
+
+    $default  reduce using rule 15 (param)
+
+
+State 32
+
+   17 compound_stmt: '{' • local_declarations statement_list '}'
+   18 local_declarations: • local_declarations var_declaration
+   19                   | ε •
+
+    $default  reduce using rule 19 (local_declarations)
+
+    local_declarations  go to state 36
+
+
+State 33
+
+   10 fun_declaration: type_specifier p_id_index ID func_declare '(' params ')' compound_stmt •
+
+    $default  reduce using rule 10 (fun_declaration)
+
+
+State 34
+
+   13 param_list: param_list ',' param •
+
+    $default  reduce using rule 13 (param_list)
+
+
+State 35
+
+   16 param: type_specifier p_id_index ID '[' • ']'
+
+    ']'  shift, and go to state 37
+
+
+State 36
+
+    6 var_declaration: • type_specifier p_id_index ID ';'
+    7                | • type_specifier p_id_index ID '[' p_num NUM ']' ';'
+    8 type_specifier: • p_type "int"
+    9               | • p_type "void"
+   17 compound_stmt: '{' local_declarations • statement_list '}'
+   18 local_declarations: local_declarations • var_declaration
+   20 statement_list: • statement_list statement
+   21               | ε •  [NUM, ID, ';', '(', '{', '}', "break", "if", "while", "return", "switch"]
+   69 p_type: ε •  ["int", "void"]
+
+    "int"     reduce using rule 69 (p_type)
+    "void"    reduce using rule 69 (p_type)
+    $default  reduce using rule 21 (statement_list)
+
+    var_declaration  go to state 38
+    type_specifier   go to state 39
+    statement_list   go to state 40
+    p_type           go to state 7
+
+
+State 37
+
+   16 param: type_specifier p_id_index ID '[' ']' •
+
+    $default  reduce using rule 16 (param)
+
+
+State 38
+
+   18 local_declarations: local_declarations var_declaration •
+
+    $default  reduce using rule 18 (local_declarations)
+
+
+State 39
+
+    6 var_declaration: type_specifier • p_id_index ID ';'
+    7                | type_specifier • p_id_index ID '[' p_num NUM ']' ';'
+   67 p_id_index: ε •
+
+    $default  reduce using rule 67 (p_id_index)
+
+    p_id_index  go to state 41
+
+
+State 40
+
+   17 compound_stmt: • '{' local_declarations statement_list '}'
+   17              | '{' local_declarations statement_list • '}'
+   20 statement_list: statement_list • statement
+   22 statement: • expression_stmt
+   23          | • compound_stmt
+   24          | • selection_stmt
+   25          | • iteration_stmt
+   26          | • return_stmt
+   27          | • switch_stmt
+   28 expression_stmt: • expression ';'
+   29                | • "break" ';'
+   30                | • ';'
+   31 selection_stmt: • "if" '(' expression ')' save statement "endif"
+   32               | • "if" '(' expression ')' save statement "else" jpf_save statement "endif"
+   33 iteration_stmt: • "while" save save_break_temp '(' expression ')' while_condition statement
+   34 return_stmt: • "return" ';'
+   35            | • "return" expression ';'
+   36 switch_stmt: • "switch" save save_break_temp '(' expression ')' dummy_save '{' case_stmts default_stmt '}'
+   42 expression: • var '=' expression
+   43           | • simple_expression
+   44 var: • p_id ID
+   45    | • p_id ID '[' expression ']'
+   46 simple_expression: • additive_expression relop additive_expression
+   47                  | • additive_expression
+   50 additive_expression: • additive_expression addop term
+   51                    | • term
+   54 term: • term mulop factor
+   55     | • factor
+   58 factor: • '(' expression ')'
+   59       | • var
+   60       | • call
+   61       | • p_num_temp NUM
+   62 call: • p_id ID '(' args ')'
+   70 p_id: ε •  [ID]
+   72 p_num_temp: ε •  [NUM]
+
+    ';'       shift, and go to state 42
+    '('       shift, and go to state 43
+    '{'       shift, and go to state 32
+    '}'       shift, and go to state 44
+    "break"   shift, and go to state 45
+    "if"      shift, and go to state 46
+    "while"   shift, and go to state 47
+    "return"  shift, and go to state 48
+    "switch"  shift, and go to state 49
+
+    NUM       reduce using rule 72 (p_num_temp)
+    $default  reduce using rule 70 (p_id)
+
+    compound_stmt        go to state 50
+    statement            go to state 51
+    expression_stmt      go to state 52
+    selection_stmt       go to state 53
+    iteration_stmt       go to state 54
+    return_stmt          go to state 55
+    switch_stmt          go to state 56
+    expression           go to state 57
+    var                  go to state 58
+    simple_expression    go to state 59
+    additive_expression  go to state 60
+    term                 go to state 61
+    factor               go to state 62
+    call                 go to state 63
+    p_id                 go to state 64
+    p_num_temp           go to state 65
+
+
+State 41
+
+    6 var_declaration: type_specifier p_id_index • ID ';'
+    7                | type_specifier p_id_index • ID '[' p_num NUM ']' ';'
+
+    ID  shift, and go to state 66
+
+
+State 42
+
+   30 expression_stmt: ';' •
+
+    $default  reduce using rule 30 (expression_stmt)
+
+
+State 43
+
+   42 expression: • var '=' expression
+   43           | • simple_expression
+   44 var: • p_id ID
+   45    | • p_id ID '[' expression ']'
+   46 simple_expression: • additive_expression relop additive_expression
+   47                  | • additive_expression
+   50 additive_expression: • additive_expression addop term
+   51                    | • term
+   54 term: • term mulop factor
+   55     | • factor
+   58 factor: • '(' expression ')'
+   58       | '(' • expression ')'
+   59       | • var
+   60       | • call
+   61       | • p_num_temp NUM
+   62 call: • p_id ID '(' args ')'
+   70 p_id: ε •  [ID]
+   72 p_num_temp: ε •  [NUM]
+
+    '('  shift, and go to state 43
+
+    NUM       reduce using rule 72 (p_num_temp)
+    $default  reduce using rule 70 (p_id)
+
+    expression           go to state 67
+    var                  go to state 58
+    simple_expression    go to state 59
+    additive_expression  go to state 60
+    term                 go to state 61
+    factor               go to state 62
+    call                 go to state 63
+    p_id                 go to state 64
+    p_num_temp           go to state 65
+
+
+State 44
+
+   17 compound_stmt: '{' local_declarations statement_list '}' •
+
+    $default  reduce using rule 17 (compound_stmt)
+
+
+State 45
+
+   29 expression_stmt: "break" • ';'
+
+    ';'  shift, and go to state 68
+
+
+State 46
+
+   31 selection_stmt: "if" • '(' expression ')' save statement "endif"
+   32               | "if" • '(' expression ')' save statement "else" jpf_save statement "endif"
+
+    '('  shift, and go to state 69
+
+
+State 47
+
+   33 iteration_stmt: "while" • save save_break_temp '(' expression ')' while_condition statement
+   74 save: ε •
+
+    $default  reduce using rule 74 (save)
+
+    save  go to state 70
+
+
+State 48
+
+   34 return_stmt: "return" • ';'
+   35            | "return" • expression ';'
+   42 expression: • var '=' expression
+   43           | • simple_expression
+   44 var: • p_id ID
+   45    | • p_id ID '[' expression ']'
+   46 simple_expression: • additive_expression relop additive_expression
+   47                  | • additive_expression
+   50 additive_expression: • additive_expression addop term
+   51                    | • term
+   54 term: • term mulop factor
+   55     | • factor
+   58 factor: • '(' expression ')'
+   59       | • var
+   60       | • call
+   61       | • p_num_temp NUM
+   62 call: • p_id ID '(' args ')'
+   70 p_id: ε •  [ID]
+   72 p_num_temp: ε •  [NUM]
+
+    ';'  shift, and go to state 71
+    '('  shift, and go to state 43
+
+    NUM       reduce using rule 72 (p_num_temp)
+    $default  reduce using rule 70 (p_id)
+
+    expression           go to state 72
+    var                  go to state 58
+    simple_expression    go to state 59
+    additive_expression  go to state 60
+    term                 go to state 61
+    factor               go to state 62
+    call                 go to state 63
+    p_id                 go to state 64
+    p_num_temp           go to state 65
+
+
+State 49
+
+   36 switch_stmt: "switch" • save save_break_temp '(' expression ')' dummy_save '{' case_stmts default_stmt '}'
+   74 save: ε •
+
+    $default  reduce using rule 74 (save)
+
+    save  go to state 73
+
+
+State 50
+
+   23 statement: compound_stmt •
+
+    $default  reduce using rule 23 (statement)
+
+
+State 51
+
+   20 statement_list: statement_list statement •
+
+    $default  reduce using rule 20 (statement_list)
+
+
+State 52
+
+   22 statement: expression_stmt •
+
+    $default  reduce using rule 22 (statement)
+
+
+State 53
+
+   24 statement: selection_stmt •
+
+    $default  reduce using rule 24 (statement)
+
+
+State 54
+
+   25 statement: iteration_stmt •
+
+    $default  reduce using rule 25 (statement)
+
+
+State 55
+
+   26 statement: return_stmt •
+
+    $default  reduce using rule 26 (statement)
+
+
+State 56
+
+   27 statement: switch_stmt •
+
+    $default  reduce using rule 27 (statement)
+
+
+State 57
+
+   28 expression_stmt: expression • ';'
+
+    ';'  shift, and go to state 74
+
+
+State 58
+
+   42 expression: var • '=' expression
+   59 factor: var •  [';', ']', ')', ',', '<', "==", '+', '-', '*', '/']
+
+    '='  shift, and go to state 75
+
+    $default  reduce using rule 59 (factor)
+
+
+State 59
+
+   43 expression: simple_expression •
+
+    $default  reduce using rule 43 (expression)
+
+
+State 60
+
+   46 simple_expression: additive_expression • relop additive_expression
+   47                  | additive_expression •  [';', ']', ')', ',']
+   48 relop: • p_op '<'
+   49      | • p_op "=="
+   50 additive_expression: additive_expression • addop term
+   52 addop: • p_op '+'
+   53      | • p_op '-'
+   71 p_op: ε •  ['<', "==", '+', '-']
+
+    '<'       reduce using rule 71 (p_op)
+    "=="      reduce using rule 71 (p_op)
+    '+'       reduce using rule 71 (p_op)
+    '-'       reduce using rule 71 (p_op)
+    $default  reduce using rule 47 (simple_expression)
+
+    relop  go to state 76
+    addop  go to state 77
+    p_op   go to state 78
+
+
+State 61
+
+   51 additive_expression: term •  [';', ']', ')', ',', '<', "==", '+', '-']
+   54 term: term • mulop factor
+   56 mulop: • p_op '*'
+   57      | • p_op '/'
+   71 p_op: ε •  ['*', '/']
+
+    '*'       reduce using rule 71 (p_op)
+    '/'       reduce using rule 71 (p_op)
+    $default  reduce using rule 51 (additive_expression)
+
+    mulop  go to state 79
+    p_op   go to state 80
+
+
+State 62
+
+   55 term: factor •
+
+    $default  reduce using rule 55 (term)
+
+
+State 63
+
+   60 factor: call •
+
+    $default  reduce using rule 60 (factor)
+
+
+State 64
+
+   44 var: p_id • ID
+   45    | p_id • ID '[' expression ']'
+   62 call: p_id • ID '(' args ')'
+
+    ID  shift, and go to state 81
+
+
+State 65
+
+   61 factor: p_num_temp • NUM
+
+    NUM  shift, and go to state 82
+
+
+State 66
+
+    6 var_declaration: type_specifier p_id_index ID • ';'
+    7                | type_specifier p_id_index ID • '[' p_num NUM ']' ';'
+
+    ';'  shift, and go to state 14
+    '['  shift, and go to state 15
+
+
+State 67
+
+   58 factor: '(' expression • ')'
+
+    ')'  shift, and go to state 83
+
+
+State 68
+
+   29 expression_stmt: "break" ';' •
+
+    $default  reduce using rule 29 (expression_stmt)
+
+
+State 69
+
+   31 selection_stmt: "if" '(' • expression ')' save statement "endif"
+   32               | "if" '(' • expression ')' save statement "else" jpf_save statement "endif"
+   42 expression: • var '=' expression
+   43           | • simple_expression
+   44 var: • p_id ID
+   45    | • p_id ID '[' expression ']'
+   46 simple_expression: • additive_expression relop additive_expression
+   47                  | • additive_expression
+   50 additive_expression: • additive_expression addop term
+   51                    | • term
+   54 term: • term mulop factor
+   55     | • factor
+   58 factor: • '(' expression ')'
+   59       | • var
+   60       | • call
+   61       | • p_num_temp NUM
+   62 call: • p_id ID '(' args ')'
+   70 p_id: ε •  [ID]
+   72 p_num_temp: ε •  [NUM]
+
+    '('  shift, and go to state 43
+
+    NUM       reduce using rule 72 (p_num_temp)
+    $default  reduce using rule 70 (p_id)
+
+    expression           go to state 84
+    var                  go to state 58
+    simple_expression    go to state 59
+    additive_expression  go to state 60
+    term                 go to state 61
+    factor               go to state 62
+    call                 go to state 63
+    p_id                 go to state 64
+    p_num_temp           go to state 65
+
+
+State 70
+
+   33 iteration_stmt: "while" save • save_break_temp '(' expression ')' while_condition statement
+   76 save_break_temp: ε •
+
+    $default  reduce using rule 76 (save_break_temp)
+
+    save_break_temp  go to state 85
+
+
+State 71
+
+   34 return_stmt: "return" ';' •
+
+    $default  reduce using rule 34 (return_stmt)
+
+
+State 72
+
+   35 return_stmt: "return" expression • ';'
+
+    ';'  shift, and go to state 86
+
+
+State 73
+
+   36 switch_stmt: "switch" save • save_break_temp '(' expression ')' dummy_save '{' case_stmts default_stmt '}'
+   76 save_break_temp: ε •
+
+    $default  reduce using rule 76 (save_break_temp)
+
+    save_break_temp  go to state 87
+
+
+State 74
+
+   28 expression_stmt: expression ';' •
+
+    $default  reduce using rule 28 (expression_stmt)
+
+
+State 75
+
+   42 expression: • var '=' expression
+   42           | var '=' • expression
+   43           | • simple_expression
+   44 var: • p_id ID
+   45    | • p_id ID '[' expression ']'
+   46 simple_expression: • additive_expression relop additive_expression
+   47                  | • additive_expression
+   50 additive_expression: • additive_expression addop term
+   51                    | • term
+   54 term: • term mulop factor
+   55     | • factor
+   58 factor: • '(' expression ')'
+   59       | • var
+   60       | • call
+   61       | • p_num_temp NUM
+   62 call: • p_id ID '(' args ')'
+   70 p_id: ε •  [ID]
+   72 p_num_temp: ε •  [NUM]
+
+    '('  shift, and go to state 43
+
+    NUM       reduce using rule 72 (p_num_temp)
+    $default  reduce using rule 70 (p_id)
+
+    expression           go to state 88
+    var                  go to state 58
+    simple_expression    go to state 59
+    additive_expression  go to state 60
+    term                 go to state 61
+    factor               go to state 62
+    call                 go to state 63
+    p_id                 go to state 64
+    p_num_temp           go to state 65
+
+
+State 76
+
+   44 var: • p_id ID
+   45    | • p_id ID '[' expression ']'
+   46 simple_expression: additive_expression relop • additive_expression
+   50 additive_expression: • additive_expression addop term
+   51                    | • term
+   54 term: • term mulop factor
+   55     | • factor
+   58 factor: • '(' expression ')'
+   59       | • var
+   60       | • call
+   61       | • p_num_temp NUM
+   62 call: • p_id ID '(' args ')'
+   70 p_id: ε •  [ID]
+   72 p_num_temp: ε •  [NUM]
+
+    '('  shift, and go to state 43
+
+    NUM       reduce using rule 72 (p_num_temp)
+    $default  reduce using rule 70 (p_id)
+
+    var                  go to state 89
+    additive_expression  go to state 90
+    term                 go to state 61
+    factor               go to state 62
+    call                 go to state 63
+    p_id                 go to state 64
+    p_num_temp           go to state 65
+
+
+State 77
+
+   44 var: • p_id ID
+   45    | • p_id ID '[' expression ']'
+   50 additive_expression: additive_expression addop • term
+   54 term: • term mulop factor
+   55     | • factor
+   58 factor: • '(' expression ')'
+   59       | • var
+   60       | • call
+   61       | • p_num_temp NUM
+   62 call: • p_id ID '(' args ')'
+   70 p_id: ε •  [ID]
+   72 p_num_temp: ε •  [NUM]
+
+    '('  shift, and go to state 43
+
+    NUM       reduce using rule 72 (p_num_temp)
+    $default  reduce using rule 70 (p_id)
+
+    var         go to state 89
+    term        go to state 91
+    factor      go to state 62
+    call        go to state 63
+    p_id        go to state 64
+    p_num_temp  go to state 65
+
+
+State 78
+
+   48 relop: p_op • '<'
+   49      | p_op • "=="
+   52 addop: p_op • '+'
+   53      | p_op • '-'
+
+    '<'   shift, and go to state 92
+    "=="  shift, and go to state 93
+    '+'   shift, and go to state 94
+    '-'   shift, and go to state 95
+
+
+State 79
+
+   44 var: • p_id ID
+   45    | • p_id ID '[' expression ']'
+   54 term: term mulop • factor
+   58 factor: • '(' expression ')'
+   59       | • var
+   60       | • call
+   61       | • p_num_temp NUM
+   62 call: • p_id ID '(' args ')'
+   70 p_id: ε •  [ID]
+   72 p_num_temp: ε •  [NUM]
+
+    '('  shift, and go to state 43
+
+    NUM       reduce using rule 72 (p_num_temp)
+    $default  reduce using rule 70 (p_id)
+
+    var         go to state 89
+    factor      go to state 96
+    call        go to state 63
+    p_id        go to state 64
+    p_num_temp  go to state 65
+
+
+State 80
+
+   56 mulop: p_op • '*'
+   57      | p_op • '/'
+
+    '*'  shift, and go to state 97
+    '/'  shift, and go to state 98
+
+
+State 81
+
+   44 var: p_id ID •  [';', ']', ')', ',', '=', '<', "==", '+', '-', '*', '/']
+   45    | p_id ID • '[' expression ']'
+   62 call: p_id ID • '(' args ')'
+
+    '['  shift, and go to state 99
+    '('  shift, and go to state 100
+
+    $default  reduce using rule 44 (var)
+
+
+State 82
+
+   61 factor: p_num_temp NUM •
+
+    $default  reduce using rule 61 (factor)
+
+
+State 83
+
+   58 factor: '(' expression ')' •
+
+    $default  reduce using rule 58 (factor)
+
+
+State 84
+
+   31 selection_stmt: "if" '(' expression • ')' save statement "endif"
+   32               | "if" '(' expression • ')' save statement "else" jpf_save statement "endif"
+
+    ')'  shift, and go to state 101
+
+
+State 85
+
+   33 iteration_stmt: "while" save save_break_temp • '(' expression ')' while_condition statement
+
+    '('  shift, and go to state 102
+
+
+State 86
+
+   35 return_stmt: "return" expression ';' •
+
+    $default  reduce using rule 35 (return_stmt)
+
+
+State 87
+
+   36 switch_stmt: "switch" save save_break_temp • '(' expression ')' dummy_save '{' case_stmts default_stmt '}'
+
+    '('  shift, and go to state 103
+
+
+State 88
+
+   42 expression: var '=' expression •
+
+    $default  reduce using rule 42 (expression)
+
+
+State 89
+
+   59 factor: var •
+
+    $default  reduce using rule 59 (factor)
+
+
+State 90
+
+   46 simple_expression: additive_expression relop additive_expression •  [';', ']', ')', ',']
+   50 additive_expression: additive_expression • addop term
+   52 addop: • p_op '+'
+   53      | • p_op '-'
+   71 p_op: ε •  ['+', '-']
+
+    '+'       reduce using rule 71 (p_op)
+    '-'       reduce using rule 71 (p_op)
+    $default  reduce using rule 46 (simple_expression)
+
+    addop  go to state 77
+    p_op   go to state 104
+
+
+State 91
+
+   50 additive_expression: additive_expression addop term •  [';', ']', ')', ',', '<', "==", '+', '-']
+   54 term: term • mulop factor
+   56 mulop: • p_op '*'
+   57      | • p_op '/'
+   71 p_op: ε •  ['*', '/']
+
+    '*'       reduce using rule 71 (p_op)
+    '/'       reduce using rule 71 (p_op)
+    $default  reduce using rule 50 (additive_expression)
+
+    mulop  go to state 79
+    p_op   go to state 80
+
+
+State 92
+
+   48 relop: p_op '<' •
+
+    $default  reduce using rule 48 (relop)
+
+
+State 93
+
+   49 relop: p_op "==" •
+
+    $default  reduce using rule 49 (relop)
+
+
+State 94
+
+   52 addop: p_op '+' •
+
+    $default  reduce using rule 52 (addop)
+
+
+State 95
+
+   53 addop: p_op '-' •
+
+    $default  reduce using rule 53 (addop)
+
+
+State 96
+
+   54 term: term mulop factor •
+
+    $default  reduce using rule 54 (term)
+
+
+State 97
+
+   56 mulop: p_op '*' •
+
+    $default  reduce using rule 56 (mulop)
+
+
+State 98
+
+   57 mulop: p_op '/' •
+
+    $default  reduce using rule 57 (mulop)
+
+
+State 99
+
+   42 expression: • var '=' expression
+   43           | • simple_expression
+   44 var: • p_id ID
+   45    | • p_id ID '[' expression ']'
+   45    | p_id ID '[' • expression ']'
+   46 simple_expression: • additive_expression relop additive_expression
+   47                  | • additive_expression
+   50 additive_expression: • additive_expression addop term
+   51                    | • term
+   54 term: • term mulop factor
+   55     | • factor
+   58 factor: • '(' expression ')'
+   59       | • var
+   60       | • call
+   61       | • p_num_temp NUM
+   62 call: • p_id ID '(' args ')'
+   70 p_id: ε •  [ID]
+   72 p_num_temp: ε •  [NUM]
+
+    '('  shift, and go to state 43
+
+    NUM       reduce using rule 72 (p_num_temp)
+    $default  reduce using rule 70 (p_id)
+
+    expression           go to state 105
+    var                  go to state 58
+    simple_expression    go to state 59
+    additive_expression  go to state 60
+    term                 go to state 61
+    factor               go to state 62
+    call                 go to state 63
+    p_id                 go to state 64
+    p_num_temp           go to state 65
+
+
+State 100
+
+   42 expression: • var '=' expression
+   43           | • simple_expression
+   44 var: • p_id ID
+   45    | • p_id ID '[' expression ']'
+   46 simple_expression: • additive_expression relop additive_expression
+   47                  | • additive_expression
+   50 additive_expression: • additive_expression addop term
+   51                    | • term
+   54 term: • term mulop factor
+   55     | • factor
+   58 factor: • '(' expression ')'
+   59       | • var
+   60       | • call
+   61       | • p_num_temp NUM
+   62 call: • p_id ID '(' args ')'
+   62     | p_id ID '(' • args ')'
+   63 args: • arg_list
+   64     | ε •  [')']
+   65 arg_list: • arg_list ',' expression
+   66         | • expression
+   70 p_id: ε •  [ID]
+   72 p_num_temp: ε •  [NUM]
+
+    '('  shift, and go to state 43
+
+    NUM       reduce using rule 72 (p_num_temp)
+    ID        reduce using rule 70 (p_id)
+    $default  reduce using rule 64 (args)
+
+    expression           go to state 106
+    var                  go to state 58
+    simple_expression    go to state 59
+    additive_expression  go to state 60
+    term                 go to state 61
+    factor               go to state 62
+    call                 go to state 63
+    args                 go to state 107
+    arg_list             go to state 108
+    p_id                 go to state 64
+    p_num_temp           go to state 65
+
+
+State 101
+
+   31 selection_stmt: "if" '(' expression ')' • save statement "endif"
+   32               | "if" '(' expression ')' • save statement "else" jpf_save statement "endif"
+   74 save: ε •
+
+    $default  reduce using rule 74 (save)
+
+    save  go to state 109
+
+
+State 102
+
+   33 iteration_stmt: "while" save save_break_temp '(' • expression ')' while_condition statement
+   42 expression: • var '=' expression
+   43           | • simple_expression
+   44 var: • p_id ID
+   45    | • p_id ID '[' expression ']'
+   46 simple_expression: • additive_expression relop additive_expression
+   47                  | • additive_expression
+   50 additive_expression: • additive_expression addop term
+   51                    | • term
+   54 term: • term mulop factor
+   55     | • factor
+   58 factor: • '(' expression ')'
+   59       | • var
+   60       | • call
+   61       | • p_num_temp NUM
+   62 call: • p_id ID '(' args ')'
+   70 p_id: ε •  [ID]
+   72 p_num_temp: ε •  [NUM]
+
+    '('  shift, and go to state 43
+
+    NUM       reduce using rule 72 (p_num_temp)
+    $default  reduce using rule 70 (p_id)
+
+    expression           go to state 110
+    var                  go to state 58
+    simple_expression    go to state 59
+    additive_expression  go to state 60
+    term                 go to state 61
+    factor               go to state 62
+    call                 go to state 63
+    p_id                 go to state 64
+    p_num_temp           go to state 65
+
+
+State 103
+
+   36 switch_stmt: "switch" save save_break_temp '(' • expression ')' dummy_save '{' case_stmts default_stmt '}'
+   42 expression: • var '=' expression
+   43           | • simple_expression
+   44 var: • p_id ID
+   45    | • p_id ID '[' expression ']'
+   46 simple_expression: • additive_expression relop additive_expression
+   47                  | • additive_expression
+   50 additive_expression: • additive_expression addop term
+   51                    | • term
+   54 term: • term mulop factor
+   55     | • factor
+   58 factor: • '(' expression ')'
+   59       | • var
+   60       | • call
+   61       | • p_num_temp NUM
+   62 call: • p_id ID '(' args ')'
+   70 p_id: ε •  [ID]
+   72 p_num_temp: ε •  [NUM]
+
+    '('  shift, and go to state 43
+
+    NUM       reduce using rule 72 (p_num_temp)
+    $default  reduce using rule 70 (p_id)
+
+    expression           go to state 111
+    var                  go to state 58
+    simple_expression    go to state 59
+    additive_expression  go to state 60
+    term                 go to state 61
+    factor               go to state 62
+    call                 go to state 63
+    p_id                 go to state 64
+    p_num_temp           go to state 65
+
+
+State 104
+
+   52 addop: p_op • '+'
+   53      | p_op • '-'
+
+    '+'  shift, and go to state 94
+    '-'  shift, and go to state 95
+
+
+State 105
+
+   45 var: p_id ID '[' expression • ']'
+
+    ']'  shift, and go to state 112
+
+
+State 106
+
+   66 arg_list: expression •
+
+    $default  reduce using rule 66 (arg_list)
+
+
+State 107
+
+   62 call: p_id ID '(' args • ')'
+
+    ')'  shift, and go to state 113
+
+
+State 108
+
+   63 args: arg_list •  [')']
+   65 arg_list: arg_list • ',' expression
+
+    ','  shift, and go to state 114
+
+    $default  reduce using rule 63 (args)
+
+
+State 109
+
+   17 compound_stmt: • '{' local_declarations statement_list '}'
+   22 statement: • expression_stmt
+   23          | • compound_stmt
+   24          | • selection_stmt
+   25          | • iteration_stmt
+   26          | • return_stmt
+   27          | • switch_stmt
+   28 expression_stmt: • expression ';'
+   29                | • "break" ';'
+   30                | • ';'
+   31 selection_stmt: • "if" '(' expression ')' save statement "endif"
+   31               | "if" '(' expression ')' save • statement "endif"
+   32               | • "if" '(' expression ')' save statement "else" jpf_save statement "endif"
+   32               | "if" '(' expression ')' save • statement "else" jpf_save statement "endif"
+   33 iteration_stmt: • "while" save save_break_temp '(' expression ')' while_condition statement
+   34 return_stmt: • "return" ';'
+   35            | • "return" expression ';'
+   36 switch_stmt: • "switch" save save_break_temp '(' expression ')' dummy_save '{' case_stmts default_stmt '}'
+   42 expression: • var '=' expression
+   43           | • simple_expression
+   44 var: • p_id ID
+   45    | • p_id ID '[' expression ']'
+   46 simple_expression: • additive_expression relop additive_expression
+   47                  | • additive_expression
+   50 additive_expression: • additive_expression addop term
+   51                    | • term
+   54 term: • term mulop factor
+   55     | • factor
+   58 factor: • '(' expression ')'
+   59       | • var
+   60       | • call
+   61       | • p_num_temp NUM
+   62 call: • p_id ID '(' args ')'
+   70 p_id: ε •  [ID]
+   72 p_num_temp: ε •  [NUM]
+
+    ';'       shift, and go to state 42
+    '('       shift, and go to state 43
+    '{'       shift, and go to state 32
+    "break"   shift, and go to state 45
+    "if"      shift, and go to state 46
+    "while"   shift, and go to state 47
+    "return"  shift, and go to state 48
+    "switch"  shift, and go to state 49
+
+    NUM       reduce using rule 72 (p_num_temp)
+    $default  reduce using rule 70 (p_id)
+
+    compound_stmt        go to state 50
+    statement            go to state 115
+    expression_stmt      go to state 52
+    selection_stmt       go to state 53
+    iteration_stmt       go to state 54
+    return_stmt          go to state 55
+    switch_stmt          go to state 56
+    expression           go to state 57
+    var                  go to state 58
+    simple_expression    go to state 59
+    additive_expression  go to state 60
+    term                 go to state 61
+    factor               go to state 62
+    call                 go to state 63
+    p_id                 go to state 64
+    p_num_temp           go to state 65
+
+
+State 110
+
+   33 iteration_stmt: "while" save save_break_temp '(' expression • ')' while_condition statement
+
+    ')'  shift, and go to state 116
+
+
+State 111
+
+   36 switch_stmt: "switch" save save_break_temp '(' expression • ')' dummy_save '{' case_stmts default_stmt '}'
+
+    ')'  shift, and go to state 117
+
+
+State 112
+
+   45 var: p_id ID '[' expression ']' •
+
+    $default  reduce using rule 45 (var)
+
+
+State 113
+
+   62 call: p_id ID '(' args ')' •
+
+    $default  reduce using rule 62 (call)
+
+
+State 114
+
+   42 expression: • var '=' expression
+   43           | • simple_expression
+   44 var: • p_id ID
+   45    | • p_id ID '[' expression ']'
+   46 simple_expression: • additive_expression relop additive_expression
+   47                  | • additive_expression
+   50 additive_expression: • additive_expression addop term
+   51                    | • term
+   54 term: • term mulop factor
+   55     | • factor
+   58 factor: • '(' expression ')'
+   59       | • var
+   60       | • call
+   61       | • p_num_temp NUM
+   62 call: • p_id ID '(' args ')'
+   65 arg_list: arg_list ',' • expression
+   70 p_id: ε •  [ID]
+   72 p_num_temp: ε •  [NUM]
+
+    '('  shift, and go to state 43
+
+    NUM       reduce using rule 72 (p_num_temp)
+    $default  reduce using rule 70 (p_id)
+
+    expression           go to state 118
+    var                  go to state 58
+    simple_expression    go to state 59
+    additive_expression  go to state 60
+    term                 go to state 61
+    factor               go to state 62
+    call                 go to state 63
+    p_id                 go to state 64
+    p_num_temp           go to state 65
+
+
+State 115
+
+   31 selection_stmt: "if" '(' expression ')' save statement • "endif"
+   32               | "if" '(' expression ')' save statement • "else" jpf_save statement "endif"
+
+    "endif"  shift, and go to state 119
+    "else"   shift, and go to state 120
+
+
+State 116
+
+   33 iteration_stmt: "while" save save_break_temp '(' expression ')' • while_condition statement
+   77 while_condition: ε •
+
+    $default  reduce using rule 77 (while_condition)
+
+    while_condition  go to state 121
+
+
+State 117
+
+   36 switch_stmt: "switch" save save_break_temp '(' expression ')' • dummy_save '{' case_stmts default_stmt '}'
+   79 dummy_save: ε •
+
+    $default  reduce using rule 79 (dummy_save)
+
+    dummy_save  go to state 122
+
+
+State 118
+
+   65 arg_list: arg_list ',' expression •
+
+    $default  reduce using rule 65 (arg_list)
+
+
+State 119
+
+   31 selection_stmt: "if" '(' expression ')' save statement "endif" •
+
+    $default  reduce using rule 31 (selection_stmt)
+
+
+State 120
+
+   32 selection_stmt: "if" '(' expression ')' save statement "else" • jpf_save statement "endif"
+   75 jpf_save: ε •
+
+    $default  reduce using rule 75 (jpf_save)
+
+    jpf_save  go to state 123
+
+
+State 121
+
+   17 compound_stmt: • '{' local_declarations statement_list '}'
+   22 statement: • expression_stmt
+   23          | • compound_stmt
+   24          | • selection_stmt
+   25          | • iteration_stmt
+   26          | • return_stmt
+   27          | • switch_stmt
+   28 expression_stmt: • expression ';'
+   29                | • "break" ';'
+   30                | • ';'
+   31 selection_stmt: • "if" '(' expression ')' save statement "endif"
+   32               | • "if" '(' expression ')' save statement "else" jpf_save statement "endif"
+   33 iteration_stmt: • "while" save save_break_temp '(' expression ')' while_condition statement
+   33               | "while" save save_break_temp '(' expression ')' while_condition • statement
+   34 return_stmt: • "return" ';'
+   35            | • "return" expression ';'
+   36 switch_stmt: • "switch" save save_break_temp '(' expression ')' dummy_save '{' case_stmts default_stmt '}'
+   42 expression: • var '=' expression
+   43           | • simple_expression
+   44 var: • p_id ID
+   45    | • p_id ID '[' expression ']'
+   46 simple_expression: • additive_expression relop additive_expression
+   47                  | • additive_expression
+   50 additive_expression: • additive_expression addop term
+   51                    | • term
+   54 term: • term mulop factor
+   55     | • factor
+   58 factor: • '(' expression ')'
+   59       | • var
+   60       | • call
+   61       | • p_num_temp NUM
+   62 call: • p_id ID '(' args ')'
+   70 p_id: ε •  [ID]
+   72 p_num_temp: ε •  [NUM]
+
+    ';'       shift, and go to state 42
+    '('       shift, and go to state 43
+    '{'       shift, and go to state 32
+    "break"   shift, and go to state 45
+    "if"      shift, and go to state 46
+    "while"   shift, and go to state 47
+    "return"  shift, and go to state 48
+    "switch"  shift, and go to state 49
+
+    NUM       reduce using rule 72 (p_num_temp)
+    $default  reduce using rule 70 (p_id)
+
+    compound_stmt        go to state 50
+    statement            go to state 124
+    expression_stmt      go to state 52
+    selection_stmt       go to state 53
+    iteration_stmt       go to state 54
+    return_stmt          go to state 55
+    switch_stmt          go to state 56
+    expression           go to state 57
+    var                  go to state 58
+    simple_expression    go to state 59
+    additive_expression  go to state 60
+    term                 go to state 61
+    factor               go to state 62
+    call                 go to state 63
+    p_id                 go to state 64
+    p_num_temp           go to state 65
+
+
+State 122
+
+   36 switch_stmt: "switch" save save_break_temp '(' expression ')' dummy_save • '{' case_stmts default_stmt '}'
+
+    '{'  shift, and go to state 125
+
+
+State 123
+
+   17 compound_stmt: • '{' local_declarations statement_list '}'
+   22 statement: • expression_stmt
+   23          | • compound_stmt
+   24          | • selection_stmt
+   25          | • iteration_stmt
+   26          | • return_stmt
+   27          | • switch_stmt
+   28 expression_stmt: • expression ';'
+   29                | • "break" ';'
+   30                | • ';'
+   31 selection_stmt: • "if" '(' expression ')' save statement "endif"
+   32               | • "if" '(' expression ')' save statement "else" jpf_save statement "endif"
+   32               | "if" '(' expression ')' save statement "else" jpf_save • statement "endif"
+   33 iteration_stmt: • "while" save save_break_temp '(' expression ')' while_condition statement
+   34 return_stmt: • "return" ';'
+   35            | • "return" expression ';'
+   36 switch_stmt: • "switch" save save_break_temp '(' expression ')' dummy_save '{' case_stmts default_stmt '}'
+   42 expression: • var '=' expression
+   43           | • simple_expression
+   44 var: • p_id ID
+   45    | • p_id ID '[' expression ']'
+   46 simple_expression: • additive_expression relop additive_expression
+   47                  | • additive_expression
+   50 additive_expression: • additive_expression addop term
+   51                    | • term
+   54 term: • term mulop factor
+   55     | • factor
+   58 factor: • '(' expression ')'
+   59       | • var
+   60       | • call
+   61       | • p_num_temp NUM
+   62 call: • p_id ID '(' args ')'
+   70 p_id: ε •  [ID]
+   72 p_num_temp: ε •  [NUM]
+
+    ';'       shift, and go to state 42
+    '('       shift, and go to state 43
+    '{'       shift, and go to state 32
+    "break"   shift, and go to state 45
+    "if"      shift, and go to state 46
+    "while"   shift, and go to state 47
+    "return"  shift, and go to state 48
+    "switch"  shift, and go to state 49
+
+    NUM       reduce using rule 72 (p_num_temp)
+    $default  reduce using rule 70 (p_id)
+
+    compound_stmt        go to state 50
+    statement            go to state 126
+    expression_stmt      go to state 52
+    selection_stmt       go to state 53
+    iteration_stmt       go to state 54
+    return_stmt          go to state 55
+    switch_stmt          go to state 56
+    expression           go to state 57
+    var                  go to state 58
+    simple_expression    go to state 59
+    additive_expression  go to state 60
+    term                 go to state 61
+    factor               go to state 62
+    call                 go to state 63
+    p_id                 go to state 64
+    p_num_temp           go to state 65
+
+
+State 124
+
+   33 iteration_stmt: "while" save save_break_temp '(' expression ')' while_condition statement •
+
+    $default  reduce using rule 33 (iteration_stmt)
+
+
+State 125
+
+   36 switch_stmt: "switch" save save_break_temp '(' expression ')' dummy_save '{' • case_stmts default_stmt '}'
+   37 case_stmts: • case_stmts case_stmt
+   38           | ε •
+
+    $default  reduce using rule 38 (case_stmts)
+
+    case_stmts  go to state 127
+
+
+State 126
+
+   32 selection_stmt: "if" '(' expression ')' save statement "else" jpf_save statement • "endif"
+
+    "endif"  shift, and go to state 128
+
+
+State 127
+
+   36 switch_stmt: "switch" save save_break_temp '(' expression ')' dummy_save '{' case_stmts • default_stmt '}'
+   37 case_stmts: case_stmts • case_stmt
+   39 case_stmt: • jpf "case" case_condition NUM ':' save statement_list
+   40 default_stmt: • jpf "default" ':' statement_list
+   41             | • jpf
+   80 jpf: ε •
+
+    $default  reduce using rule 80 (jpf)
+
+    case_stmt     go to state 129
+    default_stmt  go to state 130
+    jpf           go to state 131
+
+
+State 128
+
+   32 selection_stmt: "if" '(' expression ')' save statement "else" jpf_save statement "endif" •
+
+    $default  reduce using rule 32 (selection_stmt)
+
+
+State 129
+
+   37 case_stmts: case_stmts case_stmt •
+
+    $default  reduce using rule 37 (case_stmts)
+
+
+State 130
+
+   36 switch_stmt: "switch" save save_break_temp '(' expression ')' dummy_save '{' case_stmts default_stmt • '}'
+
+    '}'  shift, and go to state 132
+
+
+State 131
+
+   39 case_stmt: jpf • "case" case_condition NUM ':' save statement_list
+   40 default_stmt: jpf • "default" ':' statement_list
+   41             | jpf •  ['}']
+
+    "case"     shift, and go to state 133
+    "default"  shift, and go to state 134
+
+    $default  reduce using rule 41 (default_stmt)
+
+
+State 132
+
+   36 switch_stmt: "switch" save save_break_temp '(' expression ')' dummy_save '{' case_stmts default_stmt '}' •
+
+    $default  reduce using rule 36 (switch_stmt)
+
+
+State 133
+
+   39 case_stmt: jpf "case" • case_condition NUM ':' save statement_list
+   78 case_condition: ε •
+
+    $default  reduce using rule 78 (case_condition)
+
+    case_condition  go to state 135
+
+
+State 134
+
+   40 default_stmt: jpf "default" • ':' statement_list
+
+    ':'  shift, and go to state 136
+
+
+State 135
+
+   39 case_stmt: jpf "case" case_condition • NUM ':' save statement_list
+
+    NUM  shift, and go to state 137
+
+
+State 136
+
+   20 statement_list: • statement_list statement
+   21               | ε •
+   40 default_stmt: jpf "default" ':' • statement_list
+
+    $default  reduce using rule 21 (statement_list)
+
+    statement_list  go to state 138
+
+
+State 137
+
+   39 case_stmt: jpf "case" case_condition NUM • ':' save statement_list
+
+    ':'  shift, and go to state 139
+
+
+State 138
+
+   17 compound_stmt: • '{' local_declarations statement_list '}'
+   20 statement_list: statement_list • statement
+   22 statement: • expression_stmt
+   23          | • compound_stmt
+   24          | • selection_stmt
+   25          | • iteration_stmt
+   26          | • return_stmt
+   27          | • switch_stmt
+   28 expression_stmt: • expression ';'
+   29                | • "break" ';'
+   30                | • ';'
+   31 selection_stmt: • "if" '(' expression ')' save statement "endif"
+   32               | • "if" '(' expression ')' save statement "else" jpf_save statement "endif"
+   33 iteration_stmt: • "while" save save_break_temp '(' expression ')' while_condition statement
+   34 return_stmt: • "return" ';'
+   35            | • "return" expression ';'
+   36 switch_stmt: • "switch" save save_break_temp '(' expression ')' dummy_save '{' case_stmts default_stmt '}'
+   40 default_stmt: jpf "default" ':' statement_list •  ['}']
+   42 expression: • var '=' expression
+   43           | • simple_expression
+   44 var: • p_id ID
+   45    | • p_id ID '[' expression ']'
+   46 simple_expression: • additive_expression relop additive_expression
+   47                  | • additive_expression
+   50 additive_expression: • additive_expression addop term
+   51                    | • term
+   54 term: • term mulop factor
+   55     | • factor
+   58 factor: • '(' expression ')'
+   59       | • var
+   60       | • call
+   61       | • p_num_temp NUM
+   62 call: • p_id ID '(' args ')'
+   70 p_id: ε •  [ID]
+   72 p_num_temp: ε •  [NUM]
+
+    ';'       shift, and go to state 42
+    '('       shift, and go to state 43
+    '{'       shift, and go to state 32
+    "break"   shift, and go to state 45
+    "if"      shift, and go to state 46
+    "while"   shift, and go to state 47
+    "return"  shift, and go to state 48
+    "switch"  shift, and go to state 49
+
+    NUM       reduce using rule 72 (p_num_temp)
+    ID        reduce using rule 70 (p_id)
+    $default  reduce using rule 40 (default_stmt)
+
+    compound_stmt        go to state 50
+    statement            go to state 51
+    expression_stmt      go to state 52
+    selection_stmt       go to state 53
+    iteration_stmt       go to state 54
+    return_stmt          go to state 55
+    switch_stmt          go to state 56
+    expression           go to state 57
+    var                  go to state 58
+    simple_expression    go to state 59
+    additive_expression  go to state 60
+    term                 go to state 61
+    factor               go to state 62
+    call                 go to state 63
+    p_id                 go to state 64
+    p_num_temp           go to state 65
+
+
+State 139
+
+   39 case_stmt: jpf "case" case_condition NUM ':' • save statement_list
+   74 save: ε •
+
+    $default  reduce using rule 74 (save)
+
+    save  go to state 140
+
+
+State 140
+
+   20 statement_list: • statement_list statement
+   21               | ε •
+   39 case_stmt: jpf "case" case_condition NUM ':' save • statement_list
+
+    $default  reduce using rule 21 (statement_list)
+
+    statement_list  go to state 141
+
+
+State 141
+
+   17 compound_stmt: • '{' local_declarations statement_list '}'
+   20 statement_list: statement_list • statement
+   22 statement: • expression_stmt
+   23          | • compound_stmt
+   24          | • selection_stmt
+   25          | • iteration_stmt
+   26          | • return_stmt
+   27          | • switch_stmt
+   28 expression_stmt: • expression ';'
+   29                | • "break" ';'
+   30                | • ';'
+   31 selection_stmt: • "if" '(' expression ')' save statement "endif"
+   32               | • "if" '(' expression ')' save statement "else" jpf_save statement "endif"
+   33 iteration_stmt: • "while" save save_break_temp '(' expression ')' while_condition statement
+   34 return_stmt: • "return" ';'
+   35            | • "return" expression ';'
+   36 switch_stmt: • "switch" save save_break_temp '(' expression ')' dummy_save '{' case_stmts default_stmt '}'
+   39 case_stmt: jpf "case" case_condition NUM ':' save statement_list •  ['}', "case", "default"]
+   42 expression: • var '=' expression
+   43           | • simple_expression
+   44 var: • p_id ID
+   45    | • p_id ID '[' expression ']'
+   46 simple_expression: • additive_expression relop additive_expression
+   47                  | • additive_expression
+   50 additive_expression: • additive_expression addop term
+   51                    | • term
+   54 term: • term mulop factor
+   55     | • factor
+   58 factor: • '(' expression ')'
+   59       | • var
+   60       | • call
+   61       | • p_num_temp NUM
+   62 call: • p_id ID '(' args ')'
+   70 p_id: ε •  [ID]
+   72 p_num_temp: ε •  [NUM]
+
+    ';'       shift, and go to state 42
+    '('       shift, and go to state 43
+    '{'       shift, and go to state 32
+    "break"   shift, and go to state 45
+    "if"      shift, and go to state 46
+    "while"   shift, and go to state 47
+    "return"  shift, and go to state 48
+    "switch"  shift, and go to state 49
+
+    NUM       reduce using rule 72 (p_num_temp)
+    ID        reduce using rule 70 (p_id)
+    $default  reduce using rule 39 (case_stmt)
+
+    compound_stmt        go to state 50
+    statement            go to state 51
+    expression_stmt      go to state 52
+    selection_stmt       go to state 53
+    iteration_stmt       go to state 54
+    return_stmt          go to state 55
+    switch_stmt          go to state 56
+    expression           go to state 57
+    var                  go to state 58
+    simple_expression    go to state 59
+    additive_expression  go to state 60
+    term                 go to state 61
+    factor               go to state 62
+    call                 go to state 63
+    p_id                 go to state 64
+    p_num_temp           go to state 65
