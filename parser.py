@@ -1,9 +1,11 @@
 from anytree import Node, RenderTree
+from codegen import CodeGenerator
 
 
 class Parser:
 
     def __init__(self, scanner, grammar):
+        self.code_generator = CodeGenerator()
         self.grammar = grammar
         self.scanner = scanner
         self.stack = ['0']
@@ -44,6 +46,7 @@ class Parser:
             if key_value in self.grammar['parse_table'][last_index]:
                 next_move = self.grammar['parse_table'][last_index][key_value].split('_')
                 if next_move[0] == 'reduce':
+                    # self.code_generator.code_gen(, current_token[1])
                     lhs = self.grammar['grammar'][next_move[1]][0]
                     rhs = self.grammar['grammar'][next_move[1]][2:]
                     lrn = Node(lhs)

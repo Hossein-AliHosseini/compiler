@@ -65,5 +65,8 @@ class Scanner:
             self.errors.add_error((buffer, self.dfa.get_error_type()), self.line_no)
             return self.get_next_token()
         token_type = 'KEYWORD' if buffer in self.symbol_table.keywords else self.dfa.get_type()
-        self.tokens.add_token((token_type, buffer), self.line_no)
+        if token_type != 'WHITESPACE' and token_type != 'COMMENT':
+            self.tokens.add_token((token_type, buffer), self.line_no)
+        if token_type == 'ID':
+            self.symbol_table.add_symbol(buffer)
         return token_type, buffer, self.line_no
