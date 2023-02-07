@@ -10,6 +10,10 @@ class CodeGenerator:
             '69': self.push,  # p_type
             '70': self.p_id_action,
             '71': self.push,  # p_op
+            '74': self.save,
+            '75': self.jpf_save,
+
+
         }
         self.semantic_stack = []
         self.program_block = []
