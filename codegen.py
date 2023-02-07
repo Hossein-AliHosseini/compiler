@@ -5,7 +5,11 @@ class CodeGenerator:
 
     def __init__(self):
         self.action_func = {
-            '70': self.p_id_action
+            '67': self.p_id_index_action,
+            '68': self.p_num,
+            '69': self.push,  # p_type
+            '70': self.p_id_action,
+            '71': self.push,  # p_op
         }
         self.semantic_stack = []
         self.program_block = []
@@ -41,12 +45,21 @@ class CodeGenerator:
         pass
 
     def p_id_action(self, token: str):
-        tmp = self.symbol_table.get_symbol(token)
-        self.push(tmp)
+        symbol_addr, line_no = self.symbol_table.get_symbol(token)
+        self.push(symbol_addr)
+
+    def p_id_index_action(self, token: str):
+        symbol_addr, line_no = self.symbol_table.get_symbol(token)
+        self.push(line_no)
+
+    def p_num(self, token: str):
+        num = int(token)
+        self.push(num)
 
     def code_gen(self, action_num: str, token: str):
-        func = self.action_func[action_num]
-        if action_num == '70':
-            func(token)
-        else:
-            func()
+        func = self.action_func.get(action_num, default=None)
+        if func is not None:
+            if action_num in ['67', '68', '69', '70', '71']:
+                func(token)
+            else:
+                func()

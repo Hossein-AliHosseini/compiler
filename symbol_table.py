@@ -3,6 +3,7 @@ class SymbolTable:
 
     def __init__(self):
         if SymbolTable.instance is None:
+            self.line_no = 1
             SymbolTable.instance = self
             self.last_symbol_addr = 100
             self.symbol_table = {}
@@ -14,7 +15,9 @@ class SymbolTable:
         if symbol not in self.symbol_table:
             symbol_addr = self.last_symbol_addr
             self.last_symbol_addr += 1
-            self.symbol_table[symbol] = symbol_addr
+            line_no = self.line_no
+            self.line_no += 1
+            self.symbol_table[symbol] = (symbol_addr, line_no)
 
     def get_symbol(self, symbol: str):
         return self.symbol_table.get(symbol, default=None)
