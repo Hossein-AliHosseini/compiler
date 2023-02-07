@@ -13,7 +13,6 @@ class CodeGenerator:
             '74': self.save,
             '75': self.jpf_save,
 
-
         }
         self.semantic_stack = []
         self.program_block = []
@@ -67,8 +66,12 @@ class CodeGenerator:
         self.push(self.current_program_line)
         self.current_program_line += 1
 
+    def jpf(self):
+        self.program_block[self.top(0)] = f'(jp, self.current_program_line, , )'
+        self.pop()
+
     def jpf_save(self):
-        self.program_block[self.top(0)] = (self.top(1), self.current_program_line + 1)
+        self.program_block[self.top(0)] = f'(jpf, self.top(1), self.current_program_line + 1,)'
         self.pop()
         self.pop()
         self.push(self.current_program_line)
