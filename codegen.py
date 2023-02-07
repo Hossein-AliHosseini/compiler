@@ -9,13 +9,12 @@ class CodeGenerator:
             '68': self.p_num,
             '69': self.push,  # p_type
             '70': self.p_id_action,
-            '71': self.push,  # p_op
             '74': self.save,
             '75': self.jpf_save,
 
         }
         self.semantic_stack = []
-        self.program_block = []
+        self.program_block = {}
         self.last_var_addr = 500
         self.current_program_line = 1
         self.symbol_table = SymbolTable()
@@ -27,7 +26,7 @@ class CodeGenerator:
         return last_addr
 
     def top(self, i):
-        return self.program_block[len(self.program_block) - 1 - i]
+        return self.semantic_stack[len(self.semantic_stack) - 1 - i]
 
     def push(self, element):
         self.semantic_stack.append(element)
@@ -67,11 +66,11 @@ class CodeGenerator:
         self.current_program_line += 1
 
     def jpf(self):
-        self.program_block[self.top(0)] = f'(jp, self.current_program_line, , )'
+        self.program_block[self.top(0)] = f'(jp, {self.current_program_line}, , )'
         self.pop()
 
     def jpf_save(self):
-        self.program_block[self.top(0)] = f'(jpf, self.top(1), self.current_program_line + 1,)'
+        self.program_block[self.top(0)] = f'(jpf, {self.top(1)}, {self.current_program_line + 1}, )'
         self.pop()
         self.pop()
         self.push(self.current_program_line)
@@ -80,7 +79,7 @@ class CodeGenerator:
     def code_gen(self, action_num: str, token: str):
         func = self.action_func.get(action_num, default=None)
         if func is not None:
-            if action_num in ['67', '68', '69', '70', '71']:
+            if action_num in ['67', '68', '69', '70']:
                 func(token)
             else:
                 func()
