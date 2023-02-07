@@ -7,9 +7,8 @@ class CodeGenerator:
         self.action_func = {
             '67': self.p_id_index_action,
             '68': self.p_num,
-            '69': self.push,  # p_type
+            '69': self.push,  # p_label
             '70': self.p_id_action,
-            '71': self.push,  # p_op
         }
         self.semantic_stack = []
         self.program_block = {}
@@ -65,7 +64,7 @@ class CodeGenerator:
     def code_gen(self, action_num: str, token: str):
         func = self.action_func.get(action_num, default=None)
         if func is not None:
-            if action_num in ['67', '68', '69', '70', '71']:
+            if action_num in ['67', '68', '69', '70']:
                 func(token)
             else:
                 func()

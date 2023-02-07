@@ -13,13 +13,13 @@ declaration: var_declaration
 var_declaration: type_specifier p_id_index ID ';'
 | type_specifier p_id_index ID '[' p_num NUM ']' ';'
 ;
-type_specifier: p_type "int"
-| p_type "void"
+type_specifier: p_label "int"
+| p_label "void"
 ;
 fun_declaration: type_specifier p_id_index ID func_declare '(' params ')' compound_stmt
 ;
 params: param_list
-| p_type "void"
+| p_label "void"
 ;
 param_list: param_list ',' param
 | param
@@ -73,20 +73,20 @@ var: p_id ID
 simple_expression: additive_expression relop additive_expression
 | additive_expression
 ;
-relop: p_op '<'
-| p_op "=="
+relop: p_label '<'
+| p_label "=="
 ;
 additive_expression: additive_expression addop term
 | term
 ;
-addop: p_op '+'
-| p_op '-'
+addop: p_label '+'
+| p_label '-'
 ;
 term: term mulop factor
 | factor
 ;
-mulop: p_op '*'
-| p_op '/'
+mulop: p_label '*'
+| p_label '/'
 ;
 factor: '(' expression ')'
 | var
@@ -105,11 +105,9 @@ p_id_index: /* epsilon */
 ;
 p_num: /* epsilon */
 ;
-p_type: /* epsilon */
+p_label: /* epsilon */
 ;
 p_id: /* epsilon */
-;
-p_op: /* epsilon */
 ;
 p_num_temp: /* epsilon */
 ;
