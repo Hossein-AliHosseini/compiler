@@ -13,13 +13,13 @@ Grammar
     6 var_declaration: type_specifier p_id_index ID ';'
     7                | type_specifier p_id_index ID '[' p_num NUM ']' ';'
 
-    8 type_specifier: p_type "int"
-    9               | p_type "void"
+    8 type_specifier: p_label "int"
+    9               | p_label "void"
 
    10 fun_declaration: type_specifier p_id_index ID func_declare '(' params ')' compound_stmt
 
    11 params: param_list
-   12       | p_type "void"
+   12       | p_label "void"
 
    13 param_list: param_list ',' param
    14           | param
@@ -73,20 +73,20 @@ Grammar
    46 simple_expression: additive_expression relop additive_expression
    47                  | additive_expression
 
-   48 relop: p_op '<'
-   49      | p_op "=="
+   48 relop: p_label '<'
+   49      | p_label "=="
 
    50 additive_expression: additive_expression addop term
    51                    | term
 
-   52 addop: p_op '+'
-   53      | p_op '-'
+   52 addop: p_label '+'
+   53      | p_label '-'
 
    54 term: term mulop factor
    55     | factor
 
-   56 mulop: p_op '*'
-   57      | p_op '/'
+   56 mulop: p_label '*'
+   57      | p_label '/'
 
    58 factor: '(' expression ')'
    59       | var
@@ -105,29 +105,27 @@ Grammar
 
    68 p_num: ε
 
-   69 p_type: ε
+   69 p_label: ε
 
    70 p_id: ε
 
-   71 p_op: ε
+   71 p_num_temp: ε
 
-   72 p_num_temp: ε
+   72 func_declare: ε
 
-   73 func_declare: ε
+   73 save: ε
 
-   74 save: ε
+   74 jpf_save: ε
 
-   75 jpf_save: ε
+   75 save_break_temp: ε
 
-   76 save_break_temp: ε
+   76 while_condition: ε
 
-   77 while_condition: ε
+   77 case_condition: ε
 
-   78 case_condition: ε
+   78 dummy_save: ε
 
-   79 dummy_save: ε
-
-   80 jpf: ε
+   79 jpf: ε
 
 
 Terminals, with rules where they appear
@@ -274,41 +272,38 @@ Nonterminals, with rules where they appear
     p_num (67)
         on left: 68
         on right: 7
-    p_type (68)
+    p_label (68)
         on left: 69
-        on right: 8 9 12
+        on right: 8 9 12 48 49 52 53 56 57
     p_id (69)
         on left: 70
         on right: 44 45 62
-    p_op (70)
+    p_num_temp (70)
         on left: 71
-        on right: 48 49 52 53 56 57
-    p_num_temp (71)
-        on left: 72
         on right: 61
-    func_declare (72)
-        on left: 73
+    func_declare (71)
+        on left: 72
         on right: 10
-    save (73)
-        on left: 74
+    save (72)
+        on left: 73
         on right: 31 32 33 36 39
-    jpf_save (74)
-        on left: 75
+    jpf_save (73)
+        on left: 74
         on right: 32
-    save_break_temp (75)
-        on left: 76
+    save_break_temp (74)
+        on left: 75
         on right: 33 36
-    while_condition (76)
-        on left: 77
+    while_condition (75)
+        on left: 76
         on right: 33
-    case_condition (77)
-        on left: 78
+    case_condition (76)
+        on left: 77
         on right: 39
-    dummy_save (78)
-        on left: 79
+    dummy_save (77)
+        on left: 78
         on right: 36
-    jpf (79)
-        on left: 80
+    jpf (78)
+        on left: 79
         on right: 39 40 41
 
 
@@ -322,12 +317,12 @@ State 0
     5            | • fun_declaration
     6 var_declaration: • type_specifier p_id_index ID ';'
     7                | • type_specifier p_id_index ID '[' p_num NUM ']' ';'
-    8 type_specifier: • p_type "int"
-    9               | • p_type "void"
+    8 type_specifier: • p_label "int"
+    9               | • p_label "void"
    10 fun_declaration: • type_specifier p_id_index ID func_declare '(' params ')' compound_stmt
-   69 p_type: ε •
+   69 p_label: ε •
 
-    $default  reduce using rule 69 (p_type)
+    $default  reduce using rule 69 (p_label)
 
     program           go to state 1
     declaration_list  go to state 2
@@ -335,7 +330,7 @@ State 0
     var_declaration   go to state 4
     type_specifier    go to state 5
     fun_declaration   go to state 6
-    p_type            go to state 7
+    p_label           go to state 7
 
 
 State 1
@@ -353,19 +348,19 @@ State 2
     5            | • fun_declaration
     6 var_declaration: • type_specifier p_id_index ID ';'
     7                | • type_specifier p_id_index ID '[' p_num NUM ']' ';'
-    8 type_specifier: • p_type "int"
-    9               | • p_type "void"
+    8 type_specifier: • p_label "int"
+    9               | • p_label "void"
    10 fun_declaration: • type_specifier p_id_index ID func_declare '(' params ')' compound_stmt
-   69 p_type: ε •  ["int", "void"]
+   69 p_label: ε •  ["int", "void"]
 
     $end      reduce using rule 1 (program)
-    $default  reduce using rule 69 (p_type)
+    $default  reduce using rule 69 (p_label)
 
     declaration      go to state 9
     var_declaration  go to state 4
     type_specifier   go to state 5
     fun_declaration  go to state 6
-    p_type           go to state 7
+    p_label          go to state 7
 
 
 State 3
@@ -403,8 +398,8 @@ State 6
 
 State 7
 
-    8 type_specifier: p_type • "int"
-    9               | p_type • "void"
+    8 type_specifier: p_label • "int"
+    9               | p_label • "void"
 
     "int"   shift, and go to state 11
     "void"  shift, and go to state 12
@@ -435,14 +430,14 @@ State 10
 
 State 11
 
-    8 type_specifier: p_type "int" •
+    8 type_specifier: p_label "int" •
 
     $default  reduce using rule 8 (type_specifier)
 
 
 State 12
 
-    9 type_specifier: p_type "void" •
+    9 type_specifier: p_label "void" •
 
     $default  reduce using rule 9 (type_specifier)
 
@@ -452,12 +447,12 @@ State 13
     6 var_declaration: type_specifier p_id_index ID • ';'
     7                | type_specifier p_id_index ID • '[' p_num NUM ']' ';'
    10 fun_declaration: type_specifier p_id_index ID • func_declare '(' params ')' compound_stmt
-   73 func_declare: ε •  ['(']
+   72 func_declare: ε •  ['(']
 
     ';'  shift, and go to state 14
     '['  shift, and go to state 15
 
-    $default  reduce using rule 73 (func_declare)
+    $default  reduce using rule 72 (func_declare)
 
     func_declare  go to state 16
 
@@ -495,24 +490,24 @@ State 17
 
 State 18
 
-    8 type_specifier: • p_type "int"
-    9               | • p_type "void"
+    8 type_specifier: • p_label "int"
+    9               | • p_label "void"
    10 fun_declaration: type_specifier p_id_index ID func_declare '(' • params ')' compound_stmt
    11 params: • param_list
-   12       | • p_type "void"
+   12       | • p_label "void"
    13 param_list: • param_list ',' param
    14           | • param
    15 param: • type_specifier p_id_index ID
    16      | • type_specifier p_id_index ID '[' ']'
-   69 p_type: ε •
+   69 p_label: ε •
 
-    $default  reduce using rule 69 (p_type)
+    $default  reduce using rule 69 (p_label)
 
     type_specifier  go to state 20
     params          go to state 21
     param_list      go to state 22
     param           go to state 23
-    p_type          go to state 24
+    p_label         go to state 24
 
 
 State 19
@@ -559,9 +554,9 @@ State 23
 
 State 24
 
-    8 type_specifier: p_type • "int"
-    9               | p_type • "void"
-   12 params: p_type • "void"
+    8 type_specifier: p_label • "int"
+    9               | p_label • "void"
+   12 params: p_label • "void"
 
     "int"   shift, and go to state 11
     "void"  shift, and go to state 29
@@ -594,24 +589,24 @@ State 27
 
 State 28
 
-    8 type_specifier: • p_type "int"
-    9               | • p_type "void"
+    8 type_specifier: • p_label "int"
+    9               | • p_label "void"
    13 param_list: param_list ',' • param
    15 param: • type_specifier p_id_index ID
    16      | • type_specifier p_id_index ID '[' ']'
-   69 p_type: ε •
+   69 p_label: ε •
 
-    $default  reduce using rule 69 (p_type)
+    $default  reduce using rule 69 (p_label)
 
     type_specifier  go to state 20
     param           go to state 34
-    p_type          go to state 7
+    p_label         go to state 7
 
 
 State 29
 
-    9 type_specifier: p_type "void" •  [ID]
-   12 params: p_type "void" •  [')']
+    9 type_specifier: p_label "void" •  [ID]
+   12 params: p_label "void" •  [')']
 
     ')'       reduce using rule 12 (params)
     $default  reduce using rule 9 (type_specifier)
@@ -670,22 +665,22 @@ State 36
 
     6 var_declaration: • type_specifier p_id_index ID ';'
     7                | • type_specifier p_id_index ID '[' p_num NUM ']' ';'
-    8 type_specifier: • p_type "int"
-    9               | • p_type "void"
+    8 type_specifier: • p_label "int"
+    9               | • p_label "void"
    17 compound_stmt: '{' local_declarations • statement_list '}'
    18 local_declarations: local_declarations • var_declaration
    20 statement_list: • statement_list statement
    21               | ε •  [NUM, ID, ';', '(', '{', '}', "break", "if", "while", "return", "switch"]
-   69 p_type: ε •  ["int", "void"]
+   69 p_label: ε •  ["int", "void"]
 
-    "int"     reduce using rule 69 (p_type)
-    "void"    reduce using rule 69 (p_type)
+    "int"     reduce using rule 69 (p_label)
+    "void"    reduce using rule 69 (p_label)
     $default  reduce using rule 21 (statement_list)
 
     var_declaration  go to state 38
     type_specifier   go to state 39
     statement_list   go to state 40
-    p_type           go to state 7
+    p_label          go to state 7
 
 
 State 37
@@ -749,7 +744,7 @@ State 40
    61       | • p_num_temp NUM
    62 call: • p_id ID '(' args ')'
    70 p_id: ε •  [ID]
-   72 p_num_temp: ε •  [NUM]
+   71 p_num_temp: ε •  [NUM]
 
     ';'       shift, and go to state 42
     '('       shift, and go to state 43
@@ -761,7 +756,7 @@ State 40
     "return"  shift, and go to state 48
     "switch"  shift, and go to state 49
 
-    NUM       reduce using rule 72 (p_num_temp)
+    NUM       reduce using rule 71 (p_num_temp)
     $default  reduce using rule 70 (p_id)
 
     compound_stmt        go to state 50
@@ -816,11 +811,11 @@ State 43
    61       | • p_num_temp NUM
    62 call: • p_id ID '(' args ')'
    70 p_id: ε •  [ID]
-   72 p_num_temp: ε •  [NUM]
+   71 p_num_temp: ε •  [NUM]
 
     '('  shift, and go to state 43
 
-    NUM       reduce using rule 72 (p_num_temp)
+    NUM       reduce using rule 71 (p_num_temp)
     $default  reduce using rule 70 (p_id)
 
     expression           go to state 67
@@ -859,9 +854,9 @@ State 46
 State 47
 
    33 iteration_stmt: "while" • save save_break_temp '(' expression ')' while_condition statement
-   74 save: ε •
+   73 save: ε •
 
-    $default  reduce using rule 74 (save)
+    $default  reduce using rule 73 (save)
 
     save  go to state 70
 
@@ -886,12 +881,12 @@ State 48
    61       | • p_num_temp NUM
    62 call: • p_id ID '(' args ')'
    70 p_id: ε •  [ID]
-   72 p_num_temp: ε •  [NUM]
+   71 p_num_temp: ε •  [NUM]
 
     ';'  shift, and go to state 71
     '('  shift, and go to state 43
 
-    NUM       reduce using rule 72 (p_num_temp)
+    NUM       reduce using rule 71 (p_num_temp)
     $default  reduce using rule 70 (p_id)
 
     expression           go to state 72
@@ -908,9 +903,9 @@ State 48
 State 49
 
    36 switch_stmt: "switch" • save save_break_temp '(' expression ')' dummy_save '{' case_stmts default_stmt '}'
-   74 save: ε •
+   73 save: ε •
 
-    $default  reduce using rule 74 (save)
+    $default  reduce using rule 73 (save)
 
     save  go to state 73
 
@@ -992,38 +987,38 @@ State 60
 
    46 simple_expression: additive_expression • relop additive_expression
    47                  | additive_expression •  [';', ']', ')', ',']
-   48 relop: • p_op '<'
-   49      | • p_op "=="
+   48 relop: • p_label '<'
+   49      | • p_label "=="
    50 additive_expression: additive_expression • addop term
-   52 addop: • p_op '+'
-   53      | • p_op '-'
-   71 p_op: ε •  ['<', "==", '+', '-']
+   52 addop: • p_label '+'
+   53      | • p_label '-'
+   69 p_label: ε •  ['<', "==", '+', '-']
 
-    '<'       reduce using rule 71 (p_op)
-    "=="      reduce using rule 71 (p_op)
-    '+'       reduce using rule 71 (p_op)
-    '-'       reduce using rule 71 (p_op)
+    '<'       reduce using rule 69 (p_label)
+    "=="      reduce using rule 69 (p_label)
+    '+'       reduce using rule 69 (p_label)
+    '-'       reduce using rule 69 (p_label)
     $default  reduce using rule 47 (simple_expression)
 
-    relop  go to state 76
-    addop  go to state 77
-    p_op   go to state 78
+    relop    go to state 76
+    addop    go to state 77
+    p_label  go to state 78
 
 
 State 61
 
    51 additive_expression: term •  [';', ']', ')', ',', '<', "==", '+', '-']
    54 term: term • mulop factor
-   56 mulop: • p_op '*'
-   57      | • p_op '/'
-   71 p_op: ε •  ['*', '/']
+   56 mulop: • p_label '*'
+   57      | • p_label '/'
+   69 p_label: ε •  ['*', '/']
 
-    '*'       reduce using rule 71 (p_op)
-    '/'       reduce using rule 71 (p_op)
+    '*'       reduce using rule 69 (p_label)
+    '/'       reduce using rule 69 (p_label)
     $default  reduce using rule 51 (additive_expression)
 
-    mulop  go to state 79
-    p_op   go to state 80
+    mulop    go to state 79
+    p_label  go to state 80
 
 
 State 62
@@ -1099,11 +1094,11 @@ State 69
    61       | • p_num_temp NUM
    62 call: • p_id ID '(' args ')'
    70 p_id: ε •  [ID]
-   72 p_num_temp: ε •  [NUM]
+   71 p_num_temp: ε •  [NUM]
 
     '('  shift, and go to state 43
 
-    NUM       reduce using rule 72 (p_num_temp)
+    NUM       reduce using rule 71 (p_num_temp)
     $default  reduce using rule 70 (p_id)
 
     expression           go to state 84
@@ -1120,9 +1115,9 @@ State 69
 State 70
 
    33 iteration_stmt: "while" save • save_break_temp '(' expression ')' while_condition statement
-   76 save_break_temp: ε •
+   75 save_break_temp: ε •
 
-    $default  reduce using rule 76 (save_break_temp)
+    $default  reduce using rule 75 (save_break_temp)
 
     save_break_temp  go to state 85
 
@@ -1144,9 +1139,9 @@ State 72
 State 73
 
    36 switch_stmt: "switch" save • save_break_temp '(' expression ')' dummy_save '{' case_stmts default_stmt '}'
-   76 save_break_temp: ε •
+   75 save_break_temp: ε •
 
-    $default  reduce using rule 76 (save_break_temp)
+    $default  reduce using rule 75 (save_break_temp)
 
     save_break_temp  go to state 87
 
@@ -1177,11 +1172,11 @@ State 75
    61       | • p_num_temp NUM
    62 call: • p_id ID '(' args ')'
    70 p_id: ε •  [ID]
-   72 p_num_temp: ε •  [NUM]
+   71 p_num_temp: ε •  [NUM]
 
     '('  shift, and go to state 43
 
-    NUM       reduce using rule 72 (p_num_temp)
+    NUM       reduce using rule 71 (p_num_temp)
     $default  reduce using rule 70 (p_id)
 
     expression           go to state 88
@@ -1210,11 +1205,11 @@ State 76
    61       | • p_num_temp NUM
    62 call: • p_id ID '(' args ')'
    70 p_id: ε •  [ID]
-   72 p_num_temp: ε •  [NUM]
+   71 p_num_temp: ε •  [NUM]
 
     '('  shift, and go to state 43
 
-    NUM       reduce using rule 72 (p_num_temp)
+    NUM       reduce using rule 71 (p_num_temp)
     $default  reduce using rule 70 (p_id)
 
     var                  go to state 89
@@ -1239,11 +1234,11 @@ State 77
    61       | • p_num_temp NUM
    62 call: • p_id ID '(' args ')'
    70 p_id: ε •  [ID]
-   72 p_num_temp: ε •  [NUM]
+   71 p_num_temp: ε •  [NUM]
 
     '('  shift, and go to state 43
 
-    NUM       reduce using rule 72 (p_num_temp)
+    NUM       reduce using rule 71 (p_num_temp)
     $default  reduce using rule 70 (p_id)
 
     var         go to state 89
@@ -1256,10 +1251,10 @@ State 77
 
 State 78
 
-   48 relop: p_op • '<'
-   49      | p_op • "=="
-   52 addop: p_op • '+'
-   53      | p_op • '-'
+   48 relop: p_label • '<'
+   49      | p_label • "=="
+   52 addop: p_label • '+'
+   53      | p_label • '-'
 
     '<'   shift, and go to state 92
     "=="  shift, and go to state 93
@@ -1278,11 +1273,11 @@ State 79
    61       | • p_num_temp NUM
    62 call: • p_id ID '(' args ')'
    70 p_id: ε •  [ID]
-   72 p_num_temp: ε •  [NUM]
+   71 p_num_temp: ε •  [NUM]
 
     '('  shift, and go to state 43
 
-    NUM       reduce using rule 72 (p_num_temp)
+    NUM       reduce using rule 71 (p_num_temp)
     $default  reduce using rule 70 (p_id)
 
     var         go to state 89
@@ -1294,8 +1289,8 @@ State 79
 
 State 80
 
-   56 mulop: p_op • '*'
-   57      | p_op • '/'
+   56 mulop: p_label • '*'
+   57      | p_label • '/'
 
     '*'  shift, and go to state 97
     '/'  shift, and go to state 98
@@ -1374,58 +1369,58 @@ State 90
 
    46 simple_expression: additive_expression relop additive_expression •  [';', ']', ')', ',']
    50 additive_expression: additive_expression • addop term
-   52 addop: • p_op '+'
-   53      | • p_op '-'
-   71 p_op: ε •  ['+', '-']
+   52 addop: • p_label '+'
+   53      | • p_label '-'
+   69 p_label: ε •  ['+', '-']
 
-    '+'       reduce using rule 71 (p_op)
-    '-'       reduce using rule 71 (p_op)
+    '+'       reduce using rule 69 (p_label)
+    '-'       reduce using rule 69 (p_label)
     $default  reduce using rule 46 (simple_expression)
 
-    addop  go to state 77
-    p_op   go to state 104
+    addop    go to state 77
+    p_label  go to state 104
 
 
 State 91
 
    50 additive_expression: additive_expression addop term •  [';', ']', ')', ',', '<', "==", '+', '-']
    54 term: term • mulop factor
-   56 mulop: • p_op '*'
-   57      | • p_op '/'
-   71 p_op: ε •  ['*', '/']
+   56 mulop: • p_label '*'
+   57      | • p_label '/'
+   69 p_label: ε •  ['*', '/']
 
-    '*'       reduce using rule 71 (p_op)
-    '/'       reduce using rule 71 (p_op)
+    '*'       reduce using rule 69 (p_label)
+    '/'       reduce using rule 69 (p_label)
     $default  reduce using rule 50 (additive_expression)
 
-    mulop  go to state 79
-    p_op   go to state 80
+    mulop    go to state 79
+    p_label  go to state 80
 
 
 State 92
 
-   48 relop: p_op '<' •
+   48 relop: p_label '<' •
 
     $default  reduce using rule 48 (relop)
 
 
 State 93
 
-   49 relop: p_op "==" •
+   49 relop: p_label "==" •
 
     $default  reduce using rule 49 (relop)
 
 
 State 94
 
-   52 addop: p_op '+' •
+   52 addop: p_label '+' •
 
     $default  reduce using rule 52 (addop)
 
 
 State 95
 
-   53 addop: p_op '-' •
+   53 addop: p_label '-' •
 
     $default  reduce using rule 53 (addop)
 
@@ -1439,14 +1434,14 @@ State 96
 
 State 97
 
-   56 mulop: p_op '*' •
+   56 mulop: p_label '*' •
 
     $default  reduce using rule 56 (mulop)
 
 
 State 98
 
-   57 mulop: p_op '/' •
+   57 mulop: p_label '/' •
 
     $default  reduce using rule 57 (mulop)
 
@@ -1470,11 +1465,11 @@ State 99
    61       | • p_num_temp NUM
    62 call: • p_id ID '(' args ')'
    70 p_id: ε •  [ID]
-   72 p_num_temp: ε •  [NUM]
+   71 p_num_temp: ε •  [NUM]
 
     '('  shift, and go to state 43
 
-    NUM       reduce using rule 72 (p_num_temp)
+    NUM       reduce using rule 71 (p_num_temp)
     $default  reduce using rule 70 (p_id)
 
     expression           go to state 105
@@ -1511,11 +1506,11 @@ State 100
    65 arg_list: • arg_list ',' expression
    66         | • expression
    70 p_id: ε •  [ID]
-   72 p_num_temp: ε •  [NUM]
+   71 p_num_temp: ε •  [NUM]
 
     '('  shift, and go to state 43
 
-    NUM       reduce using rule 72 (p_num_temp)
+    NUM       reduce using rule 71 (p_num_temp)
     ID        reduce using rule 70 (p_id)
     $default  reduce using rule 64 (args)
 
@@ -1536,9 +1531,9 @@ State 101
 
    31 selection_stmt: "if" '(' expression ')' • save statement "endif"
    32               | "if" '(' expression ')' • save statement "else" jpf_save statement "endif"
-   74 save: ε •
+   73 save: ε •
 
-    $default  reduce using rule 74 (save)
+    $default  reduce using rule 73 (save)
 
     save  go to state 109
 
@@ -1562,11 +1557,11 @@ State 102
    61       | • p_num_temp NUM
    62 call: • p_id ID '(' args ')'
    70 p_id: ε •  [ID]
-   72 p_num_temp: ε •  [NUM]
+   71 p_num_temp: ε •  [NUM]
 
     '('  shift, and go to state 43
 
-    NUM       reduce using rule 72 (p_num_temp)
+    NUM       reduce using rule 71 (p_num_temp)
     $default  reduce using rule 70 (p_id)
 
     expression           go to state 110
@@ -1599,11 +1594,11 @@ State 103
    61       | • p_num_temp NUM
    62 call: • p_id ID '(' args ')'
    70 p_id: ε •  [ID]
-   72 p_num_temp: ε •  [NUM]
+   71 p_num_temp: ε •  [NUM]
 
     '('  shift, and go to state 43
 
-    NUM       reduce using rule 72 (p_num_temp)
+    NUM       reduce using rule 71 (p_num_temp)
     $default  reduce using rule 70 (p_id)
 
     expression           go to state 111
@@ -1619,8 +1614,8 @@ State 103
 
 State 104
 
-   52 addop: p_op • '+'
-   53      | p_op • '-'
+   52 addop: p_label • '+'
+   53      | p_label • '-'
 
     '+'  shift, and go to state 94
     '-'  shift, and go to state 95
@@ -1693,7 +1688,7 @@ State 109
    61       | • p_num_temp NUM
    62 call: • p_id ID '(' args ')'
    70 p_id: ε •  [ID]
-   72 p_num_temp: ε •  [NUM]
+   71 p_num_temp: ε •  [NUM]
 
     ';'       shift, and go to state 42
     '('       shift, and go to state 43
@@ -1704,7 +1699,7 @@ State 109
     "return"  shift, and go to state 48
     "switch"  shift, and go to state 49
 
-    NUM       reduce using rule 72 (p_num_temp)
+    NUM       reduce using rule 71 (p_num_temp)
     $default  reduce using rule 70 (p_id)
 
     compound_stmt        go to state 50
@@ -1772,11 +1767,11 @@ State 114
    62 call: • p_id ID '(' args ')'
    65 arg_list: arg_list ',' • expression
    70 p_id: ε •  [ID]
-   72 p_num_temp: ε •  [NUM]
+   71 p_num_temp: ε •  [NUM]
 
     '('  shift, and go to state 43
 
-    NUM       reduce using rule 72 (p_num_temp)
+    NUM       reduce using rule 71 (p_num_temp)
     $default  reduce using rule 70 (p_id)
 
     expression           go to state 118
@@ -1802,9 +1797,9 @@ State 115
 State 116
 
    33 iteration_stmt: "while" save save_break_temp '(' expression ')' • while_condition statement
-   77 while_condition: ε •
+   76 while_condition: ε •
 
-    $default  reduce using rule 77 (while_condition)
+    $default  reduce using rule 76 (while_condition)
 
     while_condition  go to state 121
 
@@ -1812,9 +1807,9 @@ State 116
 State 117
 
    36 switch_stmt: "switch" save save_break_temp '(' expression ')' • dummy_save '{' case_stmts default_stmt '}'
-   79 dummy_save: ε •
+   78 dummy_save: ε •
 
-    $default  reduce using rule 79 (dummy_save)
+    $default  reduce using rule 78 (dummy_save)
 
     dummy_save  go to state 122
 
@@ -1836,9 +1831,9 @@ State 119
 State 120
 
    32 selection_stmt: "if" '(' expression ')' save statement "else" • jpf_save statement "endif"
-   75 jpf_save: ε •
+   74 jpf_save: ε •
 
-    $default  reduce using rule 75 (jpf_save)
+    $default  reduce using rule 74 (jpf_save)
 
     jpf_save  go to state 123
 
@@ -1878,7 +1873,7 @@ State 121
    61       | • p_num_temp NUM
    62 call: • p_id ID '(' args ')'
    70 p_id: ε •  [ID]
-   72 p_num_temp: ε •  [NUM]
+   71 p_num_temp: ε •  [NUM]
 
     ';'       shift, and go to state 42
     '('       shift, and go to state 43
@@ -1889,7 +1884,7 @@ State 121
     "return"  shift, and go to state 48
     "switch"  shift, and go to state 49
 
-    NUM       reduce using rule 72 (p_num_temp)
+    NUM       reduce using rule 71 (p_num_temp)
     $default  reduce using rule 70 (p_id)
 
     compound_stmt        go to state 50
@@ -1952,7 +1947,7 @@ State 123
    61       | • p_num_temp NUM
    62 call: • p_id ID '(' args ')'
    70 p_id: ε •  [ID]
-   72 p_num_temp: ε •  [NUM]
+   71 p_num_temp: ε •  [NUM]
 
     ';'       shift, and go to state 42
     '('       shift, and go to state 43
@@ -1963,7 +1958,7 @@ State 123
     "return"  shift, and go to state 48
     "switch"  shift, and go to state 49
 
-    NUM       reduce using rule 72 (p_num_temp)
+    NUM       reduce using rule 71 (p_num_temp)
     $default  reduce using rule 70 (p_id)
 
     compound_stmt        go to state 50
@@ -2016,9 +2011,9 @@ State 127
    39 case_stmt: • jpf "case" case_condition NUM ':' save statement_list
    40 default_stmt: • jpf "default" ':' statement_list
    41             | • jpf
-   80 jpf: ε •
+   79 jpf: ε •
 
-    $default  reduce using rule 80 (jpf)
+    $default  reduce using rule 79 (jpf)
 
     case_stmt     go to state 129
     default_stmt  go to state 130
@@ -2068,9 +2063,9 @@ State 132
 State 133
 
    39 case_stmt: jpf "case" • case_condition NUM ':' save statement_list
-   78 case_condition: ε •
+   77 case_condition: ε •
 
-    $default  reduce using rule 78 (case_condition)
+    $default  reduce using rule 77 (case_condition)
 
     case_condition  go to state 135
 
@@ -2143,7 +2138,7 @@ State 138
    61       | • p_num_temp NUM
    62 call: • p_id ID '(' args ')'
    70 p_id: ε •  [ID]
-   72 p_num_temp: ε •  [NUM]
+   71 p_num_temp: ε •  [NUM]
 
     ';'       shift, and go to state 42
     '('       shift, and go to state 43
@@ -2154,7 +2149,7 @@ State 138
     "return"  shift, and go to state 48
     "switch"  shift, and go to state 49
 
-    NUM       reduce using rule 72 (p_num_temp)
+    NUM       reduce using rule 71 (p_num_temp)
     ID        reduce using rule 70 (p_id)
     $default  reduce using rule 40 (default_stmt)
 
@@ -2179,9 +2174,9 @@ State 138
 State 139
 
    39 case_stmt: jpf "case" case_condition NUM ':' • save statement_list
-   74 save: ε •
+   73 save: ε •
 
-    $default  reduce using rule 74 (save)
+    $default  reduce using rule 73 (save)
 
     save  go to state 140
 
@@ -2233,7 +2228,7 @@ State 141
    61       | • p_num_temp NUM
    62 call: • p_id ID '(' args ')'
    70 p_id: ε •  [ID]
-   72 p_num_temp: ε •  [NUM]
+   71 p_num_temp: ε •  [NUM]
 
     ';'       shift, and go to state 42
     '('       shift, and go to state 43
@@ -2244,7 +2239,7 @@ State 141
     "return"  shift, and go to state 48
     "switch"  shift, and go to state 49
 
-    NUM       reduce using rule 72 (p_num_temp)
+    NUM       reduce using rule 71 (p_num_temp)
     ID        reduce using rule 70 (p_id)
     $default  reduce using rule 39 (case_stmt)
 
