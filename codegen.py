@@ -23,6 +23,9 @@ class CodeGenerator:
         self.last_var_addr += 1
         return last_addr
 
+    def top(self, i):
+        return self.program_block[len(self.program_block) - 1 - i]
+
     def push(self, element):
         self.semantic_stack.append(element)
 
@@ -55,6 +58,17 @@ class CodeGenerator:
     def p_num(self, token: str):
         num = int(token)
         self.push(num)
+
+    def save(self):
+        self.push(self.current_program_line)
+        self.current_program_line += 1
+
+    def jpf_save(self):
+        self.program_block[self.top(0)] = (self.top(1), self.current_program_line + 1)
+        self.pop()
+        self.pop()
+        self.push(self.current_program_line)
+        self.current_program_line += 1
 
     def code_gen(self, action_num: str, token: str):
         func = self.action_func.get(action_num, default=None)
