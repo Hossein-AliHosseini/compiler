@@ -37,14 +37,6 @@ class CodeGenerator:
         else:
             return None
 
-    def write_code_at_index(self, index: int, code: str):
-        if len(self.program_block) < index:
-            raise Exception
-        elif len(self.program_block) == index:
-            self.program_block.append(code)
-        else:
-            self.program_block[index] = code
-
     # TODO: dump program block to file
     def dump_program_block(self):
         pass
