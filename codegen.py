@@ -4,9 +4,8 @@ from symbol_table import SymbolTable
 class CodeGenerator:
 
     def __init__(self):
-        self.action_symbols = {
-            'p_id': '70',
-            
+        self.action_func = {
+            '70': self.p_id_action
         }
         self.semantic_stack = []
         self.program_block = []
@@ -45,6 +44,9 @@ class CodeGenerator:
         tmp = self.symbol_table.get_symbol(token)
         self.push(tmp)
 
-    def code_gen(self, action_num: int, token: str):
-        if action_num == self.action_symbols['p_id']:
-            self.p_id_action(token)
+    def code_gen(self, action_num: str, token: str):
+        func = self.action_func[action_num]
+        if action_num == '70':
+            func(token)
+        else:
+            func()

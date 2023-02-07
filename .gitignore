@@ -2,4 +2,4 @@ venv
 .idea
 .venv
 __pycache__
-Archive.zip
+*.zip
