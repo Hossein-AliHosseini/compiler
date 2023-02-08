@@ -50,7 +50,6 @@ class CodeGenerator:
         else:
             return None
 
-    # TODO: dump program block to file
     def dump_program_block(self):
         sorted_program_block = collections.OrderedDict(self.program_block)
         f = open("output.txt", "w")
@@ -159,7 +158,7 @@ class CodeGenerator:
     def code_gen(self, action_num: str, token: str):
         func = self.action_func.get(action_num, None)
         if func is not None:
-            if action_num in ['67', '68', '69', '70']:
+            if action_num in ['45', '68', '69', '70', '71']:
                 func(token)
             else:
                 func()
