@@ -8,12 +8,20 @@ class CodeGenerator:
         self.action_func = {
             '6': self.declare_var_action,
             '7': self.declare_arr_action,
-            '67': self.p_id_action,
+            '42': self.assign_action,
+            '45': self.p_arr_action,
+            '46': self.operation_action,
+            '50': self.operation_action,
+            '54': self.operation_action,
+            '67': self.operation_action,
             '68': self.p_num_action,
             '69': self.push,  # p_type
             '70': self.p_id_action,
-            '74': self.save_action,
-            '75': self.jpf_save_action,
+            '71': self.p_num_temp_action,
+            '72': self.save_action,
+            '73': self.jpf_save_action,
+            '74': self.jpf_save_action,
+            '78': self.jpf_action,
         }
         self.semantic_stack = []
         self.program_block = {}
@@ -64,7 +72,7 @@ class CodeGenerator:
         self.pop()
         self.pop()
 
-    def operand_action(self):
+    def operation_action(self):
         t = self.get_temp_var()
         self.program_block[self.current_program_line] = f'({self.top(1)}, {self.top(0)}, {self.top(2)}, {t})'
         self.current_program_line += 1
@@ -85,7 +93,7 @@ class CodeGenerator:
         num = int(token)
         self.push(num)
 
-    def p_op_action(self, token: str):
+    def p_operation_action(self, token: str):
         tmp = ''
         if token == '+':
             tmp = 'ADD'
