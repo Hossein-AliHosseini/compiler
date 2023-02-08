@@ -129,6 +129,15 @@ class CodeGenerator:
     def declare_fun_action(self):
         self.pop()
 
+    def while_action(self):
+        self.program_block[self.top(0)] = f'(JPF, {self.top(1)}, {self.current_program_line + 1},   )'
+        self.program_block[self.current_program_line] = f'(JPF, {self.top(2)}, ,   )'
+        self.current_program_line += 1
+        self.pop()
+        self.pop()
+        self.pop()
+        # todo: break
+
     def code_gen(self, action_num: str, token: str):
         func = self.action_func.get(action_num, None)
         if func is not None:
