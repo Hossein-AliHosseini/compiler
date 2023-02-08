@@ -10,22 +10,22 @@ declaration_list: declaration_list declaration
 declaration: var_declaration 
 | fun_declaration 
 ;
-var_declaration: type_specifier p_id_index ID ';'
-| type_specifier p_id_index ID '[' p_num NUM ']' ';'
+var_declaration: type_specifier p_id ID ';'
+| type_specifier p_id ID '[' p_num NUM ']' ';'
 ;
-type_specifier: p_label "int"
-| p_label "void"
+type_specifier: p_type "int"
+| p_type "void"
 ;
-fun_declaration: type_specifier p_id_index ID func_declare '(' params ')' compound_stmt
+fun_declaration: type_specifier p_id ID fun_declare '(' params ')' compound_stmt
 ;
 params: param_list
-| p_label "void"
+| p_type "void"
 ;
 param_list: param_list ',' param
 | param
 ;
-param: type_specifier p_id_index ID
-| type_specifier p_id_index ID '[' ']'
+param: type_specifier ID
+| type_specifier ID '[' ']'
 ;
 compound_stmt: '{' local_declarations statement_list '}'
 ;
@@ -73,20 +73,20 @@ var: p_id ID
 simple_expression: additive_expression relop additive_expression
 | additive_expression
 ;
-relop: p_label '<'
-| p_label "=="
+relop: p_operand '<'
+| p_operand "=="
 ;
 additive_expression: additive_expression addop term
 | term
 ;
-addop: p_label '+'
-| p_label '-'
+addop: p_operand '+'
+| p_operand '-'
 ;
 term: term mulop factor
 | factor
 ;
-mulop: p_label '*'
-| p_label '/'
+mulop: p_operand '*'
+| p_operand '/'
 ;
 factor: '(' expression ')'
 | var
@@ -101,17 +101,17 @@ args: arg_list
 arg_list: arg_list ',' expression
 | expression
 ;
-p_id_index: /* epsilon */
+p_operand: /* epsilon */
 ;
 p_num: /* epsilon */
 ;
-p_label: /* epsilon */
+p_type: /* epsilon */
 ;
 p_id: /* epsilon */
 ;
 p_num_temp: /* epsilon */
 ;
-func_declare: /* epsilon */
+fun_declare: /* epsilon */
 ;
 save: /* epsilon */
 ;

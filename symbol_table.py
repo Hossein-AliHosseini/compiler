@@ -3,24 +3,57 @@ class SymbolTable:
 
     def __init__(self):
         if SymbolTable.instance is None:
-            self.line_no = 1
             SymbolTable.instance = self
-            self.last_symbol_addr = 100
-            self.symbol_table = {}
+            self.symbol_table = {
+                'symbol': [],
+                'addr': [],
+                'type': [],
+            }
             self.keywords = ['if', 'else', 'void', 'int',
                              'while', 'break', 'switch', 'default',
                              'case', 'return', 'endif']
 
-    def add_symbol(self, symbol: str):
-        if symbol not in self.symbol_table:
-            symbol_addr = self.last_symbol_addr
-            self.last_symbol_addr += 1
-            line_no = self.line_no
-            self.line_no += 1
-            self.symbol_table[symbol] = (symbol_addr, line_no)
+    @classmethod
+    def get_instance(cls):
+        if SymbolTable.instance is None:
+            SymbolTable()
+        return SymbolTable.instance
 
-    def get_symbol(self, symbol: str):
-        return self.symbol_table.get(symbol, default=None)
+    def add_symbol(self, symbol: str):
+        if symbol not in self.symbol_table['symbol']:
+            self.symbol_table['symbol'].append(symbol)
+            self.symbol_table['addr'].append(-1)
+            self.symbol_table['type'].append('')
+
+    def set_symbol_addr(self, symbol: str, addr: int):
+        found = False
+        for i in range(len(self.symbol_table['symbol'])):
+            if self.symbol_table['symbol'][i] == symbol:
+                self.symbol_table['addr'][i] = addr
+                found = True
+                break
+        return found
+
+    def set_symbol_type(self, symbol: str, s_type: str):
+        found = False
+        for i in range(len(self.symbol_table['symbol'])):
+            if self.symbol_table['symbol'][i] == symbol:
+                self.symbol_table['type'][i] = s_type
+                found = True
+                break
+        return found
+
+    def get_symbol_addr(self, symbol: str) -> int:
+        for i in range(len(self.symbol_table['symbols'])):
+            if self.symbol_table['symbol'][i] == symbol:
+                return self.symbol_table['addr'][i]
+        return -1
+
+    def get_symbol_type(self, symbol: str) -> str:
+        for i in range(len(self.symbol_table['symbols'])):
+            if self.symbol_table['symbol'][i] == symbol:
+                return self.symbol_table['type'][i]
+        return ''
 
     def write_file(self):
         f = open("symbol_table.txt", "w")
