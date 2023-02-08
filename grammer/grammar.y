@@ -16,7 +16,7 @@ var_declaration: type_specifier p_id ID ';'
 type_specifier: p_type "int"
 | p_type "void"
 ;
-fun_declaration: type_specifier p_id ID fun_declare '(' params ')' compound_stmt
+fun_declaration: type_specifier p_id ID '(' params ')' compound_stmt
 ;
 params: param_list
 | p_type "void"
@@ -110,8 +110,6 @@ p_type: /* epsilon */
 p_id: /* epsilon */
 ;
 p_num_temp: /* epsilon */
-;
-fun_declare: /* epsilon */
 ;
 save: /* epsilon */
 ;
