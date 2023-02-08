@@ -131,7 +131,7 @@ class CodeGenerator:
 
     def while_action(self):
         self.program_block[self.top(0)] = f'(JPF, {self.top(1)}, {self.current_program_line + 1},   )'
-        self.program_block[self.current_program_line] = f'(JPF, {self.top(2)}, ,   )'
+        self.program_block[self.current_program_line] = f'(JP, {self.top(2)}, ,   )'
         self.current_program_line += 1
         self.pop()
         self.pop()
