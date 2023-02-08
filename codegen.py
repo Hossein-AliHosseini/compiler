@@ -1,3 +1,4 @@
+import collections
 from symbol_table import SymbolTable
 
 
@@ -43,7 +44,13 @@ class CodeGenerator:
 
     # TODO: dump program block to file
     def dump_program_block(self):
-        pass
+        sorted_program_block = collections.OrderedDict(self.program_block)
+        f = open("output.txt", "w")
+        for value in sorted_program_block.items():
+            f.write(value)
+            f.write('/n')
+        f.close()
+
 
     def p_arr_action(self):
         arr_arg = self.pop()
@@ -137,6 +144,9 @@ class CodeGenerator:
         self.pop()
         self.pop()
         # todo: break
+
+    def break_action(self):
+        pass
 
     def code_gen(self, action_num: str, token: str):
         func = self.action_func.get(action_num, None)
