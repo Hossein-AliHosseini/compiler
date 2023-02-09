@@ -24,6 +24,7 @@ class Compiler:
 
     def parse(self):
         self.parser.parse()
+        self.parser.code_generator.dump_program_block()
         # self.parser.print_parse_tree()
         # self.parser.write_errors_to_file()
         # self.parser.code_generator.write_to_file()

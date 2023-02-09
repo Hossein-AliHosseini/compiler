@@ -44,13 +44,13 @@ class SymbolTable:
         return found
 
     def get_symbol_addr(self, symbol: str) -> int:
-        for i in range(len(self.symbol_table['symbols'])):
+        for i in range(len(self.symbol_table['symbol'])):
             if self.symbol_table['symbol'][i] == symbol:
                 return self.symbol_table['addr'][i]
         return -1
 
     def get_symbol_type(self, symbol: str) -> str:
-        for i in range(len(self.symbol_table['symbols'])):
+        for i in range(len(self.symbol_table['symbol'])):
             if self.symbol_table['symbol'][i] == symbol:
                 return self.symbol_table['type'][i]
         return ''

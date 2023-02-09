@@ -10,13 +10,13 @@ declaration_list: declaration_list declaration
 declaration: var_declaration 
 | fun_declaration 
 ;
-var_declaration: type_specifier p_id ID ';'
-| type_specifier p_id ID '[' p_num NUM ']' ';'
+var_declaration: type_specifier p_id_symbol ID ';'
+| type_specifier p_id_symbol ID '[' p_num NUM ']' ';'
 ;
 type_specifier: p_type "int"
 | p_type "void"
 ;
-fun_declaration: type_specifier p_id ID '(' params ')' compound_stmt
+fun_declaration: type_specifier p_id_symbol ID '(' params ')' fun_declare compound_stmt
 ;
 params: param_list
 | p_type "void"
@@ -108,6 +108,10 @@ p_num: /* epsilon */
 p_type: /* epsilon */
 ;
 p_id: /* epsilon */
+;
+p_id_symbol: /* epsilon */
+;
+fun_declare: /* epsilon */
 ;
 p_num_temp: /* epsilon */
 ;

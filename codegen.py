@@ -8,25 +8,30 @@ class CodeGenerator:
         self.action_func = {
             '6': self.declare_var_action,
             '7': self.declare_arr_action,
+            '28': self.pop_expression_action,
+            '31': self.jpf_action,
+            '32': self.jp_action,
             '42': self.assign_action,
             '45': self.p_arr_action,
             '46': self.operation_action,
             '50': self.operation_action,
             '54': self.operation_action,
-            '67': self.operation_action,
+            '62': self.call_func_action,
+            '67': self.p_operation_action,
             '68': self.p_num_action,
             '69': self.push,  # p_type
             '70': self.p_id_action,
-            '71': self.p_num_temp_action,
-            '72': self.save_action,
-            '73': self.jpf_save_action,
-            '74': self.jpf_save_action,
-            '78': self.jpf_action,
+            '71': self.push,
+            '72': self.declare_fun_action,
+            '73': self.p_num_temp_action,
+            '74': self.save_action,
+            '75': self.jpf_save_action,
+            '80': self.jpf_action,
         }
         self.semantic_stack = []
         self.program_block = {}
         self.last_var_addr = 500
-        self.current_program_line = 1
+        self.current_program_line = 0
         self.symbol_table = SymbolTable.get_instance()
 
     def increase_last_addr(self, amount: int):
@@ -51,13 +56,21 @@ class CodeGenerator:
             return None
 
     def dump_program_block(self):
-        sorted_program_block = collections.OrderedDict(self.program_block)
+        sorted_program_block = sorted(self.program_block)
         f = open("output.txt", "w")
-        for value in sorted_program_block.items():
-            f.write(value)
-            f.write('/n')
+        for key in sorted_program_block:
+            f.write(f'{key}\t')
+            f.write(self.program_block[key])
+            f.write('\n')
         f.close()
 
+    def call_func_action(self):
+        func_arg_addr = self.pop()
+        func_addr = self.pop()
+        if func_addr == -1:
+            self.program_block[self.current_program_line] = f'(PRINT, {func_arg_addr},   ,   )'
+            self.current_program_line += 1
+        self.push(func_addr)
 
     def p_arr_action(self):
         arr_arg = self.pop()
@@ -65,15 +78,17 @@ class CodeGenerator:
         arr_addr += 4 * arr_arg
         self.push(arr_addr)
 
+    def pop_expression_action(self):
+        self.pop()
+
     def assign_action(self):
         self.program_block[self.current_program_line] = f'(ASSIGN, {self.top(0)}, {self.top(1)},   )'
         self.current_program_line += 1
         self.pop()
-        self.pop()
 
     def operation_action(self):
         t = self.get_temp_var()
-        self.program_block[self.current_program_line] = f'({self.top(1)}, {self.top(0)}, {self.top(2)}, {t})'
+        self.program_block[self.current_program_line] = f'({self.top(1)}, {self.top(2)}, {self.top(0)}, {t})'
         self.current_program_line += 1
         self.pop()
         self.pop()
@@ -112,8 +127,13 @@ class CodeGenerator:
         self.push(self.current_program_line)
         self.current_program_line += 1
 
+    def jp_action(self):
+        self.program_block[self.top(0)] = f'(JP, {self.current_program_line},   ,   )'
+        self.pop()
+
     def jpf_action(self):
-        self.program_block[self.top(0)] = f'(JP, {self.current_program_line},  ,   )'
+        self.program_block[self.top(0)] = f'(JPF, {self.top(1)}, {self.current_program_line},   )'
+        self.pop()
         self.pop()
 
     def jpf_save_action(self):
@@ -124,10 +144,12 @@ class CodeGenerator:
         self.current_program_line += 1
 
     def declare_var_action(self):
-        symbol_addr = self.pop()
+        symbol_id = self.pop()
         symbol_type = self.pop()
         if symbol_type == 'int':
-            self.program_block[self.current_program_line] = f'(ASSIGN, #0, {symbol_addr},   )'
+            self.program_block[self.current_program_line] = f'(ASSIGN, #0, {self.last_var_addr},   )'
+            self.symbol_table.set_symbol_addr(symbol_id, self.last_var_addr)
+            self.symbol_table.set_symbol_type(symbol_id, 'int')
             self.increase_last_addr(4)
             self.current_program_line += 1
 
@@ -141,6 +163,8 @@ class CodeGenerator:
             self.current_program_line += 1
 
     def declare_fun_action(self):
+        self.pop()
+        self.pop()
         self.pop()
 
     def while_action(self):
@@ -158,7 +182,7 @@ class CodeGenerator:
     def code_gen(self, action_num: str, token: str):
         func = self.action_func.get(action_num, None)
         if func is not None:
-            if action_num in ['45', '68', '69', '70', '71']:
+            if action_num in ['45', '67', '68', '69', '70', '71', '73']:
                 func(token)
             else:
                 func()

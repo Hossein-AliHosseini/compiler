@@ -12,7 +12,7 @@
 12. statement_list -> statement_list statement | Epsilon
 13. statement -> expression_stmt | compound_stmt | selection_stmt | iteration_stmt | return_stmt | switch_stmt
 
-14. expression_stmt -> expression ; #pop_exp | break ; #break_jp | ;
+14. expression_stmt -> expression ; #pop_e | break ; #break_jp | ;
 15. selection_stmt -> if ( expression ) #save statement endif #jpf | if ( expression ) #save statement else #jpf_save statement endif #jp
 16. iteration_stmt -> while #while_start ( expression ) #while_condition statement #while_end
 17. return_stmt -> return ; | return expression ;
@@ -30,7 +30,7 @@
 28. term -> term mulop factor #op | factor
 29. mulop -> #p_op * | #p_op /
 30. factor -> ( expression ) | var | call | #p_num_temp NUM
-31. call -> #p_id ID ( args )
+31. call -> #p_id ID ( args ) #end_call
 32. args -> arg_list | Epsilon
 33. arg_list -> arg_list , expression | expression
 
